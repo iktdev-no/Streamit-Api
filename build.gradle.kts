@@ -9,7 +9,10 @@ plugins {
 
 group = "no.iktdev"
 version = "0.0.1-SNAPSHOT"
+base.archivesBaseName = "streamitApi"
 java.sourceCompatibility = JavaVersion.VERSION_11
+
+
 
 repositories {
 	maven {
@@ -39,6 +42,7 @@ dependencies {
 	implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
 }
+
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {

@@ -65,7 +65,7 @@ class ProgressService
                     .singleOrNull()
                 if (found != null) {
                     val video = it.video ?: found[progress.video]
-                    val title = it.title ?: found[progress.title]
+                    val title = it.title
                     progress.update({ progress.id eq found[progress.id] }) { table ->
                         table[this.video] = video
                         table[this.progress] = it.progress
@@ -91,8 +91,8 @@ class ProgressService
                         table[this.played] = it.played
                         table[this.video] = it.video ?: ""
                         table[this.collection] = it.collection
-                        table[this.episode] = it.episode ?: -1
-                        table[this.season] = it.season ?: -1
+                        table[this.episode] = it.episode
+                        table[this.season] = it.season
                     }
                 }
 

@@ -1,6 +1,7 @@
 package no.iktdev.streamitapi.helper
 
 import no.iktdev.streamitapi.classes.*
+import java.util.*
 
 class progressHelper
 {
@@ -13,12 +14,12 @@ class progressHelper
             /**
              * Filters on type and appends Progress Movie to mixed list
              */
-            items.filter { it.type.toLowerCase() == "movie" }.forEach() {
+            items.filter { it.type.lowercase() == "movie" }.forEach() {
                 val movieProgress = ProgressMovie.fromProgressTable(it)
                 mixed.add(movieProgress)
             }
 
-            val ofSeries = items.filter { it.type.toLowerCase() == "serie" }
+            val ofSeries = items.filter { it.type.lowercase() == "serie" }
             mapCollection(ofSeries).map {
                 mixed.add(mergeSerieTables(it.value))
             }
@@ -47,8 +48,8 @@ class progressHelper
 
         fun mergeSerieTables(items: List<ProgressTable>): ProgressSerie
         {
-            var serie: ProgressSerie = ProgressSerie.fromProgressTable(items.first())
-            var seasonMap: MutableMap<Int, MutableList<ProgressEpisode>> = mutableMapOf()
+            val serie: ProgressSerie = ProgressSerie.fromProgressTable(items.first())
+            val seasonMap: MutableMap<Int, MutableList<ProgressEpisode>> = mutableMapOf()
             items.forEach()
             {
                 if (it.season == null)
