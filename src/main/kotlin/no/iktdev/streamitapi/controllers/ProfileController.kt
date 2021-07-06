@@ -52,10 +52,10 @@ class ProfileController
         ProfileService().upsertProfile(profile)
     }
 
-    @DeleteMapping("/profile/{guid}")
-    fun deleteProfile(@PathVariable guid: String)
+    @DeleteMapping("/profile")
+    fun deleteProfile(@RequestBody profile: Profile)
     {
-        ProfileService().deleteProfile(guid)
+        ProfileService().deleteProfile(profile.guid)
     }
 
 }
