@@ -30,7 +30,7 @@ class serieHelper
             return serieList
         }
 
-        private fun mergeSerie(list: List<SerieFlat>): Serie
+        public fun mergeSerie(list: List<SerieFlat>): Serie
         {
             var serie: Serie = Serie.fromFlat(list.first()) // This should assign the shared catalog values, and apply the first season + episode
             val seasonMap: MutableMap<Int, MutableList<Episode>> = mutableMapOf()

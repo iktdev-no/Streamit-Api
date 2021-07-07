@@ -1,5 +1,6 @@
 package no.iktdev.streamitapi.controllers
 
+import no.iktdev.streamitapi.database.*
 import no.iktdev.streamitapi.classes.Catalog
 import no.iktdev.streamitapi.classes.Movie
 import no.iktdev.streamitapi.classes.Serie
@@ -92,24 +93,26 @@ class CatalogController
      * Using Catalog collection to obtain serie
      */
     @GetMapping("/serie/{collection}")
-    fun serie(@PathVariable collection: String? = null): Serie?
+    fun getSerie(@PathVariable collection: String? = null): Serie?
     {
+        if (collection.isNullOrEmpty()) {
+            return null;
+        }
         var _serie: Serie? = null
-        transaction(DataSource().getConnection()) {
-            val result = no.iktdev.streamitapi.database.catalog.innerJoin(no.iktdev.streamitapi.database.serie, { no.iktdev.streamitapi.database.catalog.collection }, { no.iktdev.streamitapi.database.serie.collection })
-                .select { no.iktdev.streamitapi.database.catalog.collection eq no.iktdev.streamitapi.database.serie.collection}
-                .andWhere { no.iktdev.streamitapi.database.catalog.collection.isNotNull() }
-                .singleOrNull()
+        transaction() {
+            val serieFlat: MutableList<SerieFlat> = mutableListOf()
+            val result = catalog
+                .join(serie, JoinType.INNER)
+                {
+                    catalog.collection eq serie.collection
+                }
+                .select { catalog.collection.eq(collection) }
+                .andWhere { catalog.collection.isNotNull() }
+                .mapNotNull {
+                    serieFlat.add(SerieFlat.fromRow(it))
+                }
+            _serie = serieHelper.map().mergeSerie(serieFlat)
 
-            _serie = result?.let {
-                SerieFlat.fromRow(
-                    it
-                )
-            }?.let {
-                serieHelper.map().mapFromFlat(
-                    it
-                )
-            }
         }
         return _serie
     }
