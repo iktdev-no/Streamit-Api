@@ -8,13 +8,13 @@ import no.iktdev.streamitapi.classes.SerieFlat
 class serieHelper
 {
     class map {
-        public fun mapFromFlat(item: SerieFlat): Serie
+        fun mapFromFlat(item: SerieFlat): Serie
         {
             val mappedList: Map<String, List<SerieFlat>> = this.listOfList(listOf(item))
             return mapToSerie(mappedList).first()
         }
 
-        public fun mapFromFlatList(items: List<SerieFlat>): List<Serie>
+        fun mapFromFlatList(items: List<SerieFlat>): List<Serie>
         {
             val mappedList: Map<String, List<SerieFlat>> = this.listOfList(items)
             return mapToSerie(mappedList)
@@ -30,9 +30,9 @@ class serieHelper
             return serieList
         }
 
-        public fun mergeSerie(list: List<SerieFlat>): Serie
+        fun mergeSerie(list: List<SerieFlat>): Serie
         {
-            var serie: Serie = Serie.fromFlat(list.first()) // This should assign the shared catalog values, and apply the first season + episode
+            val serie: Serie = Serie.fromFlat(list.first()) // This should assign the shared catalog values, and apply the first season + episode
             val seasonMap: MutableMap<Int, MutableList<Episode>> = mutableMapOf()
             list.forEach()
             {
@@ -97,7 +97,7 @@ class serieHelper
                     )
                 }
             }
-            return out;
+            return out
         }
     }
 

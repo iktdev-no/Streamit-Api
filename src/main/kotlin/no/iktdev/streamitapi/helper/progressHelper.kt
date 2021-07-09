@@ -14,7 +14,7 @@ class progressHelper
             /**
              * Filters on type and appends Progress Movie to mixed list
              */
-            items.filter { it.type.lowercase() == "movie" }.forEach() {
+            items.filter { it.type.lowercase() == "movie" }.forEach {
                 val movieProgress = ProgressMovie.fromProgressTable(it)
                 mixed.add(movieProgress)
             }
@@ -84,8 +84,8 @@ class progressHelper
         fun list(serie: ProgressSerie): List<ProgressTable>
         {
             val out: MutableList<ProgressTable> = mutableListOf()
-            serie.seasons.forEach() { ses ->
-                ses.episodes.forEach() { epi ->
+            serie.seasons.forEach { ses ->
+                ses.episodes.forEach { epi ->
                     out.add(
                         ProgressTable(
                             id = -1,

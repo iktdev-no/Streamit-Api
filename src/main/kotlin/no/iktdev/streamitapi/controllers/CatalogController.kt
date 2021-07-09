@@ -24,9 +24,9 @@ class CatalogController
     fun catalog(): List<Catalog>
     {
         val _catalog: MutableList<Catalog> = mutableListOf()
-        val datasource = DataSource().getConnection();
+        val datasource = DataSource().getConnection()
         transaction(datasource) {
-            val query: Query = no.iktdev.streamitapi.database.catalog.selectAll()
+            val query: Query = catalog.selectAll()
 
             query.mapNotNull {
                 _catalog.add(Catalog.fromRow(it))
@@ -41,10 +41,10 @@ class CatalogController
         val _movies: MutableList<Catalog> = mutableListOf()
 
         transaction(DataSource().getConnection()) {
-            no.iktdev.streamitapi.database.catalog
+            catalog
                 .selectAll()
-                .andWhere { no.iktdev.streamitapi.database.catalog.iid.greater(0) }
-                .orWhere { no.iktdev.streamitapi.database.catalog.type.eq("movie") }
+                .andWhere { catalog.iid.greater(0) }
+                .orWhere { catalog.type.eq("movie") }
                 .mapNotNull {
                     _movies.add(Catalog.fromRow(it))
                 }
@@ -57,10 +57,10 @@ class CatalogController
     {
         val _serie: MutableList<Catalog> = mutableListOf()
         transaction(DataSource().getConnection()) {
-            no.iktdev.streamitapi.database.catalog
+            catalog
                 .selectAll()
-                .andWhere { no.iktdev.streamitapi.database.catalog.collection.isNotNull() }
-                .andWhere { no.iktdev.streamitapi.database.catalog.type.eq("serie") }
+                .andWhere { catalog.collection.isNotNull() }
+                .andWhere { catalog.type.eq("serie") }
                 .mapNotNull {
                     _serie.add(Catalog.fromRow(it))
                 }
@@ -80,9 +80,9 @@ class CatalogController
             return _movie
         }
         transaction(DataSource().getConnection()) {
-            val result = no.iktdev.streamitapi.database.catalog.innerJoin(movie, { iid }, { movie.id })
-                .select { no.iktdev.streamitapi.database.catalog.id eq id }
-                .andWhere { no.iktdev.streamitapi.database.catalog.iid.isNotNull() }
+            val result = catalog.innerJoin(movie, { iid }, { movie.id })
+                .select { catalog.id eq id }
+                .andWhere { catalog.iid.isNotNull() }
                 .singleOrNull()
             _movie = result?.let { Movie.fromRow(it) }
         }
@@ -96,10 +96,10 @@ class CatalogController
     fun getSerie(@PathVariable collection: String? = null): Serie?
     {
         if (collection.isNullOrEmpty()) {
-            return null;
+            return null
         }
         var _serie: Serie? = null
-        transaction() {
+        transaction {
             val serieFlat: MutableList<SerieFlat> = mutableListOf()
             catalog
                 .join(serie, JoinType.INNER)

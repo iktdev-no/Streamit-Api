@@ -11,5 +11,4 @@ import org.springframework.web.bind.annotation.RestController
  *  - Version
  */
 @RestController
-class GeneralController {
-}
+class GeneralController

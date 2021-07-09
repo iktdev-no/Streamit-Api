@@ -55,7 +55,7 @@ class ProgressService
     {
         val list: List<ProgressTable> = progressHelper.flatten().list(progressSerie)
         transaction {
-            list.forEach() {
+            list.forEach {
                 val found = progress
                     .select { progress.guid eq it.guid }
                     .andWhere { progress.collection eq (it.collection ?: "") }
