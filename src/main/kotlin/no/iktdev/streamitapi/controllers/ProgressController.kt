@@ -8,6 +8,7 @@ import no.iktdev.streamitapi.services.ProgressService
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import javax.management.Query.and
 
@@ -134,18 +135,22 @@ AND progress.episode = res.episode;
 
 
     @PostMapping("/progress/movie")
-    fun uploadedProgressMovie(@RequestBody progress: ProgressMovie)
+    @ResponseStatus(HttpStatus.OK)
+    fun uploadedProgressMovie(@RequestBody progress: ProgressMovie) : Response
     {
         System.out.println(progress)
         ProgressService().upsertProgressMovie(progress)
+        return Response()
     }
 
     @PostMapping("/progress/serie")
-    fun uploadedProgressSerie(@RequestBody progress: ProgressSerie)
+    @ResponseStatus(HttpStatus.OK)
+    fun uploadedProgressSerie(@RequestBody progress: ProgressSerie): Response
     {
         System.out.println(progress)
         ProgressService.validate().serie(progress)
         ProgressService().upsertProgressSerie(progress)
+        return Response()
     }
 
 

@@ -47,15 +47,17 @@ class ProfileController
     * */
 
     @PostMapping("/profile")
-    fun createProfile(@RequestBody profile: Profile)
+    fun createProfile(@RequestBody profile: Profile): Response
     {
         ProfileService().upsertProfile(profile)
+        return Response()
     }
 
     @DeleteMapping("/profile")
-    fun deleteProfile(@RequestBody profile: Profile)
+    fun deleteProfile(@RequestBody profile: Profile): Response
     {
         ProfileService().deleteProfile(profile.guid)
+        return Response()
     }
 
 }
