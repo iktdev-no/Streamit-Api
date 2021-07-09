@@ -14,7 +14,6 @@ abstract class BaseCatalog
     abstract val type: String
     abstract val collection: String?
     abstract var genres: String?
-    abstract var iid: Int
 }
 
 abstract class BaseEpisode
@@ -24,7 +23,7 @@ abstract class BaseEpisode
 }
 
 
-data class Catalog(override val id: Int, override val title: String, override val cover: String?, override val type : String, override val collection: String?, override var iid: Int,
+data class Catalog(override val id: Int, override val title: String, override val cover: String?, override val type : String, override val collection: String?,
                    override var genres: String?
 )
     : BaseCatalog()
@@ -38,7 +37,6 @@ data class Catalog(override val id: Int, override val title: String, override va
             type = resultRow[catalog.type],
             collection = resultRow[catalog.collection],
             genres = resultRow[catalog.genres],
-            iid = (resultRow.getOrNull(catalog.iid) ?: 0) //  [catalog.iid] ?: 0)
         )
     }
 }
@@ -49,8 +47,7 @@ data class Movie(override val id: Int, // id will be catalog id
                  override val cover: String?,
                  override val type: String,
                  override val collection: String?,
-                 override var genres: String?,
-                 override var iid: Int // iid will be movie id
+                 override var genres: String?
 )
     : BaseCatalog()
 {
@@ -63,8 +60,7 @@ data class Movie(override val id: Int, // id will be catalog id
             cover = resultRow[catalog.cover],
             type = resultRow[catalog.type],
             collection = resultRow[catalog.collection],
-            genres = resultRow[catalog.genres],
-            iid = resultRow[movie.id].value,
+            genres = resultRow[catalog.genres]
         )
 
         fun toCatalog(it: Movie) = Catalog(
@@ -73,8 +69,7 @@ data class Movie(override val id: Int, // id will be catalog id
             cover = it.cover,
             type = it.type,
             collection = it.collection,
-            genres = it.genres,
-            iid = it.iid
+            genres = it.genres
         )
     }
 }
@@ -109,8 +104,8 @@ data class Serie(var seasons: List<Season>,
                  override val cover: String?,
                  override val type: String,
                  override val collection: String?,
-                 override var genres: String?,
-                 override var iid: Int): BaseCatalog()
+                 override var genres: String?
+                 ): BaseCatalog()
 {
                      companion object
                      {
@@ -124,7 +119,6 @@ data class Serie(var seasons: List<Season>,
                              type = item.type,
                              collection = item.collection,
                              genres = item.genres,
-                             iid = item.iid,
                              seasons = listOf() // listOf(Season.fromFlat(item))
                          )
 
@@ -135,7 +129,6 @@ data class Serie(var seasons: List<Season>,
                              type = it.type,
                              genres = it.genres,
                              collection = it.collection,
-                             iid = 0
                          )
                      }
 
@@ -148,7 +141,6 @@ data class SerieFlat(
     override val type: String,
     override val collection: String,
     override var genres: String?,
-    override var iid: Int,
     val season: Int,
     val episode: Int,
     val episodeTitle: String?,
@@ -167,8 +159,7 @@ data class SerieFlat(
             season = resultRow[serie.season],
             episode = resultRow[serie.episode],
             episodeTitle = resultRow[serie.title],
-            video = resultRow[serie.video],
-            iid = 0
+            video = resultRow[serie.video]
         )
     }
 }
