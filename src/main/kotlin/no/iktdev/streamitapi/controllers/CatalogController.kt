@@ -101,7 +101,7 @@ class CatalogController
         var _serie: Serie? = null
         transaction() {
             val serieFlat: MutableList<SerieFlat> = mutableListOf()
-            val result = catalog
+            catalog
                 .join(serie, JoinType.INNER)
                 {
                     catalog.collection eq serie.collection

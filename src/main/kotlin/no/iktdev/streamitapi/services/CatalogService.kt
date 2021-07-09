@@ -31,7 +31,6 @@ class CatalogService
                 it[catalog.type] = data.type
                 it[catalog.collection] = data.collection ?: ""
                 it[catalog.genres] = data.genres ?: ""
-                it[catalog.iid] = data.iid
             }
         }
 
@@ -42,7 +41,6 @@ class CatalogService
                 it[catalog.type] = data.type
                 it[catalog.collection] = data.collection ?: ""
                 it[catalog.genres] = data.genres ?: ""
-                it[catalog.iid] = data.iid
             }
         }
 
@@ -134,12 +132,11 @@ class CatalogService
                     Catalog(Movie.toCatalog(data))
                 }
                 else {
-                    // Not completed
                     val insert = insertMovie(data)
                     val id = insert.getOrNull(movie.id)
                     if (id != null)
                     {
-                        data.iid = id.value;
+                        // data.iid = id.value;
                         Catalog(Movie.toCatalog(data))
                     }
                     else

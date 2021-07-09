@@ -88,7 +88,6 @@ class serieHelper
                             cover = serie.cover,
                             type = serie.type,
                             collection = serie.collection ?: serie.title,
-                            iid = 0,
                             season = season.season,
                             episode = episode.episode,
                             episodeTitle = episode.title,
