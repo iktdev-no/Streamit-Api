@@ -1,5 +1,6 @@
 package no.iktdev.streamitapi.controllers
 
+import no.iktdev.streamitapi.Configuration
 import no.iktdev.streamitapi.classes.*
 import no.iktdev.streamitapi.database.DataSource
 import no.iktdev.streamitapi.database.progress
@@ -117,7 +118,7 @@ AND progress.episode = res.episode;
                 .select { progress.played.isNotNull() }
                 .andWhere { progress.guid eq guid }
                 .orderBy(progress.played, SortOrder.DESC)
-                .limit(10)
+                .limit(Configuration.continueWatch)
                 .mapNotNull {
                     _progress.add(ProgressTable.fromRow(it))
                 }

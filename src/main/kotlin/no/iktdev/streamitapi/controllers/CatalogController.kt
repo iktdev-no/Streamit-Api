@@ -1,5 +1,6 @@
 package no.iktdev.streamitapi.controllers
 
+import no.iktdev.streamitapi.Configuration
 import no.iktdev.streamitapi.database.*
 import no.iktdev.streamitapi.classes.Catalog
 import no.iktdev.streamitapi.classes.Movie
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 @RestController
@@ -117,6 +120,42 @@ class CatalogController
         return _serie
     }
 
+    @GetMapping("/new")
+    fun getNewContent(): List<Catalog>
+    {
+        val _catalog: MutableList<Catalog> = mutableListOf()
+        transaction() {
+            catalog
+                .selectAll()
+                .orderBy(catalog.id, SortOrder.DESC)
+                .limit(10)
+                .mapNotNull {
+                    _catalog.add(Catalog.fromRow(it))
+                }
+        }
+        return _catalog
+    }
+
+    @GetMapping("/updated")
+    fun getUpdatedSeries(): List<Catalog>
+    {
+        val dateTime = LocalDateTime.now()
+        dateTime.minusDays(Configuration.frshness)
+
+        val updated: MutableList<Catalog> = mutableListOf()
+        transaction {
+            catalog
+                .select { catalog.collection.isNotNull() }
+                .andWhere { catalog.type eq "serie" }
+                .andWhere { catalog.added.isNotNull() }
+                .mapNotNull {
+                    val added = it[catalog.added]
+                    val recent = added.epochSecond > dateTime.toEpochSecond(ZoneOffset.from(added))
+                    updated.add(Catalog.fromRow(it, recent))
+                }
+        }
+        return updated
+    }
 
 
 

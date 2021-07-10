@@ -14,6 +14,7 @@ abstract class BaseCatalog
     abstract val type: String
     abstract val collection: String?
     abstract var genres: String?
+    abstract val recent: Boolean // If true on serie, shoud display new episodes, if movie, should display just new
 }
 
 abstract class BaseEpisode
@@ -24,19 +25,21 @@ abstract class BaseEpisode
 
 
 data class Catalog(override val id: Int, override val title: String, override val cover: String?, override val type : String, override val collection: String?,
-                   override var genres: String?
+                   override var genres: String?,
+                   override val recent: Boolean
 )
     : BaseCatalog()
 {
     companion object
     {
-        fun fromRow(resultRow: ResultRow) = Catalog(
+        fun fromRow(resultRow: ResultRow, recent: Boolean = false) = Catalog(
             id = resultRow[catalog.id].value,
             title = resultRow[catalog.title],
             cover = resultRow[catalog.cover],
             type = resultRow[catalog.type],
             collection = resultRow[catalog.collection],
             genres = resultRow[catalog.genres],
+            recent = recent
         )
     }
 }
@@ -47,20 +50,21 @@ data class Movie(override val id: Int, // id will be catalog id
                  override val cover: String?,
                  override val type: String,
                  override val collection: String?,
-                 override var genres: String?
+                 override var genres: String?, override val recent: Boolean
 )
     : BaseCatalog()
 {
     companion object
     {
-        fun fromRow(resultRow: ResultRow) = Movie(
+        fun fromRow(resultRow: ResultRow, recent: Boolean = false) = Movie(
             id = resultRow[catalog.id].value,
             video = resultRow[movie.video],
             title = resultRow[catalog.title],
             cover = resultRow[catalog.cover],
             type = resultRow[catalog.type],
             collection = resultRow[catalog.collection],
-            genres = resultRow[catalog.genres]
+            genres = resultRow[catalog.genres],
+            recent = recent
         )
 
         fun toCatalog(it: Movie) = Catalog(
@@ -69,7 +73,8 @@ data class Movie(override val id: Int, // id will be catalog id
             cover = it.cover,
             type = it.type,
             collection = it.collection,
-            genres = it.genres
+            genres = it.genres,
+            recent = it.recent
         )
     }
 }
@@ -104,21 +109,22 @@ data class Serie(var seasons: List<Season>,
                  override val cover: String?,
                  override val type: String,
                  override val collection: String?,
-                 override var genres: String?
-                 ): BaseCatalog()
+                 override var genres: String?, override val recent: Boolean
+): BaseCatalog()
 {
                      companion object
                      {
                          /**
                           * NOTE! This will not populate season array!
                           */
-                         fun fromFlat(item: SerieFlat) = Serie(
+                         fun fromFlat(item: SerieFlat, recent: Boolean = false) = Serie(
                              id = item.id,
                              title = item.title,
                              cover = item.cover,
                              type = item.type,
                              collection = item.collection,
                              genres = item.genres,
+                             recent = recent,
                              seasons = listOf() // listOf(Season.fromFlat(item))
                          )
 
@@ -129,6 +135,7 @@ data class Serie(var seasons: List<Season>,
                              type = it.type,
                              genres = it.genres,
                              collection = it.collection,
+                             recent = it.recent
                          )
                      }
 
@@ -144,12 +151,13 @@ data class SerieFlat(
     val season: Int,
     val episode: Int,
     val episodeTitle: String?,
-    val video: String
+    val video: String,
+    override val recent: Boolean
 ): BaseCatalog()
 {
     companion object
     {
-        fun fromRow(resultRow: ResultRow) = SerieFlat(
+        fun fromRow(resultRow: ResultRow, recent: Boolean = false) = SerieFlat(
             id = resultRow[catalog.id].value,
             title = resultRow[catalog.title],
             cover = resultRow[catalog.cover],
@@ -159,7 +167,8 @@ data class SerieFlat(
             season = resultRow[serie.season],
             episode = resultRow[serie.episode],
             episodeTitle = resultRow[serie.title],
-            video = resultRow[serie.video]
+            video = resultRow[serie.video],
+            recent = recent
         )
     }
 }

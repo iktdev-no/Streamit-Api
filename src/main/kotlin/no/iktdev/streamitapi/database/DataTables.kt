@@ -3,6 +3,10 @@ package no.iktdev.streamitapi.database
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.`java-time`.timestamp
+import java.sql.Time
+import java.sql.Timestamp
+import java.time.Instant
 
 object catalog : IntIdTable() {
     val title: Column<String> = varchar("title", 250).uniqueIndex()
@@ -11,7 +15,7 @@ object catalog : IntIdTable() {
     var collection: Column<String> = varchar("collection", 100)
     var iid: Column<Int> = integer("iid")
     var genres: Column<String> = varchar("genres", 24)
-    var category: Column<String> = varchar("category", 24)
+    val added: Column<Instant> = timestamp("added")
 }
 
 object genre: IntIdTable() {
