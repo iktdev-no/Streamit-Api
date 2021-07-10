@@ -92,7 +92,8 @@ class serieHelper
                             episode = episode.episode,
                             episodeTitle = episode.title,
                             video = episode.video,
-                            genres = serie.genres
+                            genres = serie.genres,
+                            recent = serie.recent
                         )
                     )
                 }
