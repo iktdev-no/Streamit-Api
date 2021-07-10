@@ -73,11 +73,14 @@ class ProgressController
     }
 
 
+    /**
+     * Is only valid for serie (at the moment)
+     */
     @GetMapping("/progress/{guid}/continue")
-    fun getContinue(@PathVariable guid: String):  List<ProgressTable>
+    fun getContinue(@PathVariable guid: String):  List<BaseProgress>
     {
-        val _progress: MutableList<ProgressTable> = mutableListOf()
-
+        val _progress: MutableList<BaseProgress> = mutableListOf()
+        val table: MutableList<ProgressTable> = mutableListOf()
         transaction {
             val msx = progress.season.max().alias(progress.season.name)
             val mex = progress.episode.max().alias(progress.episode.name)
@@ -91,20 +94,6 @@ class ProgressController
                 msx,
                 progress.title
             ).selectAll().groupBy(progress.title).alias("seasonTable")
-
-            /*
-SELECT * FROM progress
-INNER JOIN (
-    SELECT MAX(episode) as episode, title FROM progress GROUP BY title
-) AS res
-INNER JOIN (
-    SELECT MAX(season) as season, title FROM progress GROUP BY title
-) AS ses
-ON progress.title = res.title
-AND progress.title = ses.title
-AND progress.season = ses.season
-AND progress.episode = res.episode;
-             */
 
             progress
                 .join(episodeTable, JoinType.INNER)
@@ -120,11 +109,13 @@ AND progress.episode = res.episode;
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .mapNotNull {
-                    _progress.add(ProgressTable.fromRow(it))
+                    table.add(ProgressTable.fromRow(it))
                 }
-
-
         }
+        if (table.size > 0) {
+            _progress.addAll(progressHelper.map().fromMixedProgressTable(table))
+        }
+
         return _progress
     }
 
