@@ -27,9 +27,17 @@ class ProgressService
                 .singleOrNull()
             run {
                 if (found != null) {
+                    var _progress = progressMovie.progress
+                    if (found[progress.progress] > progressMovie.progress) {
+                        println("Re-using DB data " + progressMovie.title)
+                        println("Reason: Present progress is larger than passed..")
+                        _progress = found[progress.progress]
+
+                    }
+
                     progress.update({ progress.id eq found[progress.id] })
                     {
-                        it[this.progress] = progressMovie.progress
+                        it[this.progress] = _progress
                         it[this.duration] = progressMovie.duration
                         it[this.played] = progressMovie.played
                         it[this.video] = progressMovie.video ?: ""
@@ -66,9 +74,17 @@ class ProgressService
                 if (found != null) {
                     val video = it.video ?: found[progress.video]
                     val title = it.title
+                    var _progress = it.progress
+
+                    if (found[progress.progress] > it.progress) {
+                        println("Re-using DB data " + it.title + " - S" + it.season + " E" + it.episode)
+                        println("Reason: Present progress is larger than passed..")
+                        _progress = found[progress.progress]
+                    }
+
                     progress.update({ progress.id eq found[progress.id] }) { table ->
                         table[this.video] = video
-                        table[this.progress] = it.progress
+                        table[this.progress] = _progress
                         table[this.duration] = it.duration
                         table[this.played] = it.played
                         table[this.title] = title
