@@ -27,7 +27,19 @@ class progressHelper
             return mixed
         }
 
-        fun mapCollection(items: List<ProgressTable>): Map<String, List<ProgressTable>>
+        fun fromSerieProgressTable(items: List<ProgressTable>): List<ProgressSerie> {
+            val mapped: MutableList<ProgressSerie> = mutableListOf()
+
+            val ofSeries = items.filter { it.type.lowercase() == "serie" }
+            mapCollection(ofSeries).map {
+                mapped.add(mergeSerieTables(it.value))
+            }
+
+            return mapped
+        }
+
+
+        private fun mapCollection(items: List<ProgressTable>): Map<String, List<ProgressTable>>
         {
             val serieMap: MutableMap<String, MutableList<ProgressTable>> = mutableMapOf()
             items.forEach()

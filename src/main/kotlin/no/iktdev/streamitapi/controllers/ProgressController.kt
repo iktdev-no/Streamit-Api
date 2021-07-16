@@ -94,7 +94,7 @@ class ProgressController
     fun getSerieProgressForUser(@PathVariable guid: String): List<ProgressSerie>?
     {
         val serieProgress: MutableList<ProgressSerie> = mutableListOf()
-        transaction(DataSource().getConnection()) {
+        transaction() {
             val _progress: MutableList<ProgressTable> = mutableListOf()
             val result = progress
                 .select { progress.guid eq guid }
@@ -104,7 +104,7 @@ class ProgressController
                 }
             if (result.count() > 0)
             {
-                serieProgress.add(progressHelper.map().mergeSerieTables(_progress))
+                serieProgress.addAll(progressHelper.map().fromSerieProgressTable(_progress))
             }
 
         }
