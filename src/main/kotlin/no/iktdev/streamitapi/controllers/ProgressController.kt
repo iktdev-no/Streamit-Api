@@ -30,7 +30,7 @@ class ProgressController
                     _progress.add(ProgressTable.fromRow(it))
                 }
         }
-        System.out.println(_progress)
+        //System.out.println(_progress)
         val mixedProgress: List<BaseProgress> = progressHelper.map().fromMixedProgressTable(_progress)
         return mixedProgress
     }
@@ -71,6 +71,46 @@ class ProgressController
         }
         return serieProgress
     }
+
+
+    @GetMapping("/progress/{guid}/movie")
+    fun getMovieProgressForUser(@PathVariable guid: String): List<ProgressMovie>?
+    {
+        System.out.println(":|")
+        val _progress: MutableList<ProgressMovie> = mutableListOf()
+        transaction(DataSource().getConnection()) {
+            progress
+                .select { progress.guid eq guid }
+                .andWhere { progress.type eq "movie" }
+                .mapNotNull {
+                    _progress.add(ProgressMovie.fromRow(it))
+                }
+        }
+        return _progress
+    }
+
+
+    @GetMapping("/progress/{guid}/serie")
+    fun getSerieProgressForUser(@PathVariable guid: String): List<ProgressSerie>?
+    {
+        val serieProgress: MutableList<ProgressSerie> = mutableListOf()
+        transaction(DataSource().getConnection()) {
+            val _progress: MutableList<ProgressTable> = mutableListOf()
+            val result = progress
+                .select { progress.guid eq guid }
+                .andWhere { progress.type eq "serie" }
+                .mapNotNull {
+                    _progress.add(ProgressTable.fromRow(it))
+                }
+            if (result.count() > 0)
+            {
+                serieProgress.add(progressHelper.map().mergeSerieTables(_progress))
+            }
+
+        }
+        return serieProgress
+    }
+
 
 
     /**

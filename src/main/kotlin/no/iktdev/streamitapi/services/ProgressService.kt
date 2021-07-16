@@ -34,12 +34,16 @@ class ProgressService
                         _progress = found[progress.progress]
 
                     }
+                    var _played = progressMovie.played
+                    if (found[progress.played] > progressMovie.played) {
+                        _played = found[progress.played]
+                    }
 
                     progress.update({ progress.id eq found[progress.id] })
                     {
                         it[this.progress] = _progress
                         it[this.duration] = progressMovie.duration
-                        it[this.played] = progressMovie.played
+                        it[this.played] = _played
                         it[this.video] = progressMovie.video ?: ""
                     }
                 }
@@ -82,11 +86,16 @@ class ProgressService
                         _progress = found[progress.progress]
                     }
 
+                    var _played = it.played
+                    if (found[progress.played] > it.played) {
+                        _played = found[progress.played]
+                    }
+
                     progress.update({ progress.id eq found[progress.id] }) { table ->
                         table[this.video] = video
                         table[this.progress] = _progress
                         table[this.duration] = it.duration
-                        table[this.played] = it.played
+                        table[this.played] = _played
                         table[this.title] = title
                     }
                 }
