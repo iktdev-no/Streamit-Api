@@ -141,8 +141,7 @@ class CatalogController
     fun getUpdatedSeries(): List<Catalog>
     {
         val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
-        val dateTime = LocalDateTime.now()
-        dateTime.minusDays(Configuration.frshness)
+        val dateTime = LocalDateTime.now().minusDays(Configuration.frshness)
 
         val updated: MutableList<Catalog> = mutableListOf()
         transaction {
