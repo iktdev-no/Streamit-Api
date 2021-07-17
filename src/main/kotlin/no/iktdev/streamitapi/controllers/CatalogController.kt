@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -139,6 +140,7 @@ class CatalogController
     @GetMapping("/updated")
     fun getUpdatedSeries(): List<Catalog>
     {
+        val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
         val dateTime = LocalDateTime.now()
         dateTime.minusDays(Configuration.frshness)
 
@@ -150,7 +152,7 @@ class CatalogController
                 .andWhere { catalog.added.isNotNull() }
                 .mapNotNull {
                     val added = it[catalog.added]
-                    val recent = added.epochSecond > dateTime.toEpochSecond(ZoneOffset.from(added))
+                    val recent = added.epochSecond > dateTime.toEpochSecond(zone)
                     updated.add(Catalog.fromRow(it, recent))
                 }
         }
