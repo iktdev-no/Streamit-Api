@@ -32,6 +32,7 @@ object serie: IntIdTable() {
     val season: Column<Int> = integer("season")
     val collection: Column<String> = varchar("collection", 250)
     val video: Column<String> = varchar("video", 100).uniqueIndex()
+    val added: Column<Instant> = timestamp("added")
 }
 
 object subtitle: IntIdTable() {
@@ -68,7 +69,7 @@ object progress : IntIdTable() {
     val played: Column<Int> = integer("played")
 }
 
-object metadata: IntIdTable() {
+object metadata_catalog: IntIdTable() {
     val sourceId: Column<Int> = integer("sourceId")
     val metaSource: Column<String> = varchar("source", 16)
     val sourceTitle: Column<String> = varchar("sourceTitle", 200)

@@ -13,6 +13,7 @@ class Configuration
         var password: String = System.getenv("DATABASE_PASSWORD") ?: "shFZ27eL2x2NoxyEDBMfDWkvFO"
         var database: String = System.getenv("DATABASE_USE") ?: "streamit"
         var frshness: Long = System.getenv("CONTENT_FRESH_DAYS")?.toLong() ?: 5
+        var serieAgeCap: String = System.getenv("SERIE_AGE") ?: "30d"
         var continueWatch: Int = System.getenv("CONTENT_CONTINUE")?.toInt() ?: 10
     }
 

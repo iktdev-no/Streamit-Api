@@ -8,6 +8,8 @@ import no.iktdev.streamitapi.classes.Serie
 import no.iktdev.streamitapi.classes.SerieFlat
 import no.iktdev.streamitapi.database.DataSource
 import no.iktdev.streamitapi.database.movie
+import no.iktdev.streamitapi.database.serie.added
+import no.iktdev.streamitapi.database.serie.collection
 import no.iktdev.streamitapi.helper.serieHelper
 import no.iktdev.streamitapi.services.CatalogService
 import org.jetbrains.exposed.sql.*
@@ -141,17 +143,59 @@ class CatalogController
     fun getUpdatedSeries(): List<Catalog>
     {
         val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
+        var recentAdded = LocalDateTime.now()
+        recentAdded = when {
+            Configuration.serieAgeCap.contains("d") -> {
+                val days = Configuration.serieAgeCap.trim('d').toLong()
+                recentAdded.minusDays(days)
+            }
+            Configuration.serieAgeCap.contains("m") -> {
+                val months = Configuration.serieAgeCap.trim('m').toLong()
+                recentAdded.minusMonths(months)
+            }
+            Configuration.serieAgeCap.contains("y") -> {
+                val years = Configuration.serieAgeCap.trim('y').toLong()
+                recentAdded.minusMonths(years)
+            }
+            else -> {
+                recentAdded.minusDays(Configuration.frshness*3)
+            }
+        }
+
+
         val dateTime = LocalDateTime.now().minusDays(Configuration.frshness)
 
         val updated: MutableList<Catalog> = mutableListOf()
         transaction {
+            val serieTable = serie.slice(
+                serie.collection,
+                serie.added.max().alias(serie.added.name)
+            ).selectAll().groupBy(serie.collection).alias("updatedTable")
+
+
             catalog
+                .join(serieTable, JoinType.INNER)
+                {
+                    catalog.collection eq serieTable[serie.collection]
+                }
+                .slice(
+                    catalog.id,
+                    catalog.title,
+                    catalog.cover,
+                    catalog.type,
+                    catalog.collection,
+                    catalog.iid,
+                    catalog.genres,
+                    serieTable[added]
+                )
                 .select { catalog.collection.isNotNull() }
                 .andWhere { catalog.type eq "serie" }
-                .andWhere { catalog.added.isNotNull() }
-                .orderBy(catalog.added, SortOrder.DESC)
+                    // This will
+                .andWhere { serieTable[added].greater(recentAdded.toString()) }
+                .orderBy(serieTable[added], SortOrder.DESC)
                 .mapNotNull {
-                    val added = it[catalog.added]
+                    println(it)
+                    val added = it[serieTable[added]]
                     val recent = added.epochSecond > dateTime.toEpochSecond(zone)
                     updated.add(Catalog.fromRow(it, recent))
                 }
