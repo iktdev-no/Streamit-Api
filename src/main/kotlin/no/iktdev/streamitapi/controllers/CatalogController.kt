@@ -149,12 +149,14 @@ class CatalogController
                 .select { catalog.collection.isNotNull() }
                 .andWhere { catalog.type eq "serie" }
                 .andWhere { catalog.added.isNotNull() }
+                .orderBy(catalog.added, SortOrder.DESC)
                 .mapNotNull {
                     val added = it[catalog.added]
                     val recent = added.epochSecond > dateTime.toEpochSecond(zone)
                     updated.add(Catalog.fromRow(it, recent))
                 }
         }
+
         return updated
     }
 

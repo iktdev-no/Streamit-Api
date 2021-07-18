@@ -20,7 +20,7 @@ class DataSource
 
         return Database.connect(
             "jdbc:mysql://$address/$database",
-            driver = "com.mysql.jdbc.Driver",
+            //driver = "com.mysql.jdbc.Driver",
             user = Configuration.username,
             password = Configuration.password
         )
