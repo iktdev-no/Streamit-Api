@@ -42,6 +42,9 @@ dependencies {
 	implementation("io.springfox:springfox-swagger2:$swaggerVersion")
 	implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
+
+	implementation ("com.auth0:java-jwt:3.18.1")
+
 }
 
 

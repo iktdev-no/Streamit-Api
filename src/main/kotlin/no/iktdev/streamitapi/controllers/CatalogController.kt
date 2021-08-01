@@ -11,6 +11,7 @@ import no.iktdev.streamitapi.database.movie
 import no.iktdev.streamitapi.database.serie.added
 import no.iktdev.streamitapi.database.serie.collection
 import no.iktdev.streamitapi.helper.serieHelper
+import no.iktdev.streamitapi.helper.timeParse
 import no.iktdev.streamitapi.services.CatalogService
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -143,26 +144,7 @@ class CatalogController
     fun getUpdatedSeries(): List<Catalog>
     {
         val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
-        var recentAdded = LocalDateTime.now()
-        recentAdded = when {
-            Configuration.serieAgeCap.contains("d") -> {
-                val days = Configuration.serieAgeCap.trim('d').toLong()
-                recentAdded.minusDays(days)
-            }
-            Configuration.serieAgeCap.contains("m") -> {
-                val months = Configuration.serieAgeCap.trim('m').toLong()
-                recentAdded.minusMonths(months)
-            }
-            Configuration.serieAgeCap.contains("y") -> {
-                val years = Configuration.serieAgeCap.trim('y').toLong()
-                recentAdded.minusMonths(years)
-            }
-            else -> {
-                recentAdded.minusDays(Configuration.frshness*3)
-            }
-        }
-
-
+        val recentAdded = timeParse().recentTime(Configuration.serieAgeCap)
         val dateTime = LocalDateTime.now().minusDays(Configuration.frshness)
 
         val updated: MutableList<Catalog> = mutableListOf()
