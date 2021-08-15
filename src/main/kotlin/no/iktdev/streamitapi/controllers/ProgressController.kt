@@ -170,7 +170,7 @@ class ProgressController
     @ResponseStatus(HttpStatus.OK)
     fun uploadedProgressMovie(@RequestBody progress: ProgressMovie) : Response
     {
-        System.out.println(progress)
+        //System.out.println(progress)
         ProgressService().upsertProgressMovie(progress)
         return Response()
     }
@@ -179,7 +179,7 @@ class ProgressController
     @ResponseStatus(HttpStatus.OK)
     fun uploadedProgressSerie(@RequestBody progress: ProgressSerie): Response
     {
-        System.out.println(progress)
+        //System.out.println(progress)
         ProgressService.validate().serie(progress)
         ProgressService().upsertProgressSerie(progress)
         return Response()
