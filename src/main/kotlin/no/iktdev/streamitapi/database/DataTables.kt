@@ -74,3 +74,19 @@ object metadata_catalog: IntIdTable() {
     val metaSource: Column<String> = varchar("source", 16)
     val sourceTitle: Column<String> = varchar("sourceTitle", 200)
 }
+
+object data_video: IntIdTable() {
+    val file: Column<String> = varchar("source", 200).uniqueIndex()
+    val codec: Column<String> = varchar("codec", 12)
+    val pixelFormat: Column<String> = varchar("pixelFormat", 12)
+    val colorSpace: Column<String?> = varchar("colorSpace", 8).nullable()
+}
+
+object data_audio: IntIdTable() {
+    val file: Column<String> = varchar("source", 200).uniqueIndex() // Currently Audio Stream is embedded in video file. Might change at a later date
+    val codec: Column<String> = varchar("codec", 12)
+    val channels: Column<Int?> = integer("channels").nullable()
+    val sample_rate: Column<Int?> = integer("sampleRate").nullable()
+    val layout: Column<String?> = varchar("layout", 8).nullable()
+    val language: Column<String> = varchar("language", 6)
+}
