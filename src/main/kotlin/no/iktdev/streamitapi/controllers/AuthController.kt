@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import no.iktdev.streamitapi.Configuration
 import no.iktdev.streamitapi.classes.Jwt
-import no.iktdev.streamitapi.classes.Profile
+import no.iktdev.streamitapi.classes.User
 import no.iktdev.streamitapi.error.MissingConfigurationException
 import no.iktdev.streamitapi.helper.timeParse
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,7 +18,7 @@ import java.util.*
 class AuthController {
 
     @PostMapping("/auth/new")
-    fun createJWT(@RequestBody profile: Profile): Jwt {
+    fun createJWT(@RequestBody user: User): Jwt {
         
 
 
@@ -28,7 +28,7 @@ class AuthController {
         val builder = JWT.create()
             .withIssuer("streamit system")
             .withIssuedAt(Date.from(Instant.now()))
-            .withPayload(mapOf("guid" to profile.guid, "username" to profile.username))
+            .withPayload(mapOf("guid" to user.guid, "name" to user.name))
             .withSubject("authorization O.I.A.")
         val expiry = timeParse().configTime(Configuration.jwtExpiry)
         builder.withExpiresAt(Date.from(expiry.toInstant(zone)))

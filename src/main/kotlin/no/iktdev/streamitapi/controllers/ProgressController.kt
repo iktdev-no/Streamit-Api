@@ -5,13 +5,11 @@ import no.iktdev.streamitapi.classes.*
 import no.iktdev.streamitapi.database.DataSource
 import no.iktdev.streamitapi.database.progress
 import no.iktdev.streamitapi.helper.progressHelper
-import no.iktdev.streamitapi.services.ProgressService
+import no.iktdev.streamitapi.services.database.ProgressService
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import javax.management.Query.and
 
 @RestController
 class ProgressController
