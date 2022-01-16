@@ -1,9 +1,10 @@
 package no.iktdev.streamitapi.controllers
 
 import no.iktdev.streamitapi.classes.Heartbeat
-import org.jetbrains.exposed.sql.Database
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.servlet.http.HttpServletResponse
+
 
 @RestController
 class HeartbeatController {
@@ -23,6 +24,12 @@ class HeartbeatController {
     fun defaultPath(): Heartbeat
     {
         return heartbeat()
+    }
+
+    @GetMapping("/swagger")
+    fun swaggerRedirect(response: HttpServletResponse) {
+        response.setHeader("Location", "/swagger-ui.html")
+        response.status = 302
     }
 
 }

@@ -1,24 +1,19 @@
 package no.iktdev.streamitapi.controllers
 
 import no.iktdev.streamitapi.Configuration
+import no.iktdev.streamitapi.classes.*
 import no.iktdev.streamitapi.database.*
-import no.iktdev.streamitapi.classes.Catalog
-import no.iktdev.streamitapi.classes.Movie
-import no.iktdev.streamitapi.classes.Serie
-import no.iktdev.streamitapi.classes.SerieFlat
 import no.iktdev.streamitapi.database.DataSource
 import no.iktdev.streamitapi.database.movie
 import no.iktdev.streamitapi.database.serie.added
-import no.iktdev.streamitapi.database.serie.collection
+import no.iktdev.streamitapi.getContext
 import no.iktdev.streamitapi.helper.serieHelper
 import no.iktdev.streamitapi.helper.timeParse
-import no.iktdev.streamitapi.services.CatalogService
+import no.iktdev.streamitapi.services.database.CatalogService
+import no.iktdev.streamitapi.services.operation.CatalogItemRemovalService
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -27,6 +22,11 @@ import java.time.ZoneOffset
 @RestController
 class CatalogController
 {
+    private fun getService(): CatalogItemRemovalService? {
+        return getContext()?.getBean(CatalogItemRemovalService::class.java)
+    }
+
+
     @GetMapping("/catalog")
     fun catalog(): List<Catalog>
     {
@@ -206,5 +206,37 @@ class CatalogController
         CatalogService.InsertOrUpdate().Movie(movie)
     }
 
+    /**
+     * Delete Mappings below
+     */
+
+    @DeleteMapping("/movie/title")
+    fun deleteMovieByTitle(@RequestParam("title") title: String): Response {
+        val result = getService()?.removeMovie(title) ?: Response(false, "Failed to access service")
+        return result
+    }
+    @DeleteMapping("/movie/id")
+    fun deleteMovieById(@RequestParam("id") id: Int): Response {
+        return getService()?.removeMovie(id) ?: Response(false, "Failed to access service")
+    }
+
+    @DeleteMapping("/serie/title")
+    fun deleteSerieByTitle(@RequestParam("title") title: String): Response {
+        return getService()?.removeSerie(title) ?: Response(false, "Failed to access service")
+    }
+    @DeleteMapping("/serie/collection")
+    fun deleteSerieByCollection(@RequestParam("collection") collection: String): Response {
+        return getService()?.removeSerie(collection) ?: Response(false, "Failed to access service")
+    }
+    @DeleteMapping("/serie/id")
+    fun deleteSerieById(@RequestParam("id")  id: Int): Response {
+        return getService()?.removeSerie(id) ?: Response(false, "Failed to access service")
+    }
+
+    /*@DeleteMapping("/episode/{id}")
+    fun deleteEpisodeById(@RequestParam("id") id: Int) {
+        LoggerFactory.getLogger(javaClass.simpleName).info("Requesting delete on $id")
+
+    }*/
 
 }
