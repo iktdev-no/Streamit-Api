@@ -2,7 +2,7 @@ package no.iktdev.streamitapi.controllers
 
 import no.iktdev.streamitapi.classes.*
 import no.iktdev.streamitapi.database.*
-import no.iktdev.streamitapi.services.database.ProfileService
+import no.iktdev.streamitapi.services.database.UserService
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -49,14 +49,14 @@ class UserController
     @PostMapping("/user")
     fun createProfile(@RequestBody user: User): Response
     {
-        ProfileService().upsertProfile(user)
+        UserService().upsertUser(user)
         return Response()
     }
 
     @DeleteMapping("/profile")
     fun deleteProfile(@RequestBody user: User): Response
     {
-        ProfileService().deleteProfile(user.guid)
+        UserService().deleteUser(user.guid)
         return Response()
     }
 

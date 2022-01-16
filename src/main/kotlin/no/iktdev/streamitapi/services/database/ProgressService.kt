@@ -1,7 +1,5 @@
-package no.iktdev.streamitapi.services
+package no.iktdev.streamitapi.services.database
 
-import net.dzikoysk.exposed.upsert.upsert
-import no.iktdev.streamitapi.classes.BaseProgress
 import no.iktdev.streamitapi.classes.ProgressMovie
 import no.iktdev.streamitapi.classes.ProgressSerie
 import no.iktdev.streamitapi.classes.ProgressTable
