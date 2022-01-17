@@ -27,7 +27,7 @@ class UserController
     }
 
     @GetMapping("/user/{guid}")
-    fun profile(@PathVariable guid: String): User?
+    fun user(@PathVariable guid: String): User?
     {
         var _user: User? = null
         transaction(DataSource().getConnection())
@@ -47,14 +47,14 @@ class UserController
     * */
 
     @PostMapping("/user")
-    fun createProfile(@RequestBody user: User): Response
+    fun createUser(@RequestBody user: User): Response
     {
         UserService().upsertUser(user)
         return Response()
     }
 
-    @DeleteMapping("/profile")
-    fun deleteProfile(@RequestBody user: User): Response
+    @DeleteMapping("/user")
+    fun deleteUser(@RequestBody user: User): Response
     {
         UserService().deleteUser(user.guid)
         return Response()

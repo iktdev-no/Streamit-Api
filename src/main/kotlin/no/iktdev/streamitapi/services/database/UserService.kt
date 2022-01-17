@@ -36,16 +36,6 @@ class UserService
                 }
             }
 
-            /*profiles.upsert(conflictColumn = profiles.guid,
-            insertBody = {
-                profile.image
-                profile.username
-                profile.image
-            },
-            updateBody = {
-                profile.username
-                profile.image
-            })*/
         }
     }
 
