@@ -46,15 +46,15 @@ class CatalogItemRemovalService {
     private fun deleteMovie(fileName: String): Response {
         val file = getMoveItemPath(fileName)
         if (file == null || !file.exists()) {
-            LoggerFactory.getLogger(javaClass.simpleName).info("File not found, no action performed..")
-            return Response(false, "File not found, no action performed...")
-        }
-
-        if (file.delete()) { LoggerFactory.getLogger(javaClass.simpleName).info("Failed to delete file, none changes made.."); return Response(false, "Failed to delete file..") }
-
-        val subtitleFile = getSubtitleItemPath(file.nameWithoutExtension)
-        if (subtitleFile != null && subtitleFile.exists()) {
-            subtitleFile.delete()
+            val errorText = "File: $fileName not found under movie folder inside ${Configuration.content}"
+            LoggerFactory.getLogger(javaClass.simpleName).error(errorText)
+            return Response(false, errorText)
+        } else {
+            if (file.delete()) { LoggerFactory.getLogger(javaClass.simpleName).info("Failed to delete file, none changes made.."); return Response(false, "Failed to delete file..") }
+            val subtitleFile = getSubtitleItemPath(file.nameWithoutExtension)
+            if (subtitleFile != null && subtitleFile.exists()) {
+                subtitleFile.delete()
+            }
         }
 
         val databaseResult = getService()?.removal?.removeMovie(fileName)
@@ -80,8 +80,8 @@ class CatalogItemRemovalService {
         val file = getSerieItemPath(collection)
 
         if (file == null || !file.exists()) {
-            LoggerFactory.getLogger(javaClass.simpleName).info("File not found, no action performed..")
-            return Response(false, "Could not find file/directory")
+            LoggerFactory.getLogger(javaClass.simpleName).error("Folder: $collection not found under serie folder inside ${Configuration.content}")
+            return Response(false, "File not found, please see console")
         }
 
         if (file.delete()) { LoggerFactory.getLogger(javaClass.simpleName).info("Failed to delete file, none changes made.."); return Response(false, "Failed to delete file/directory") }
