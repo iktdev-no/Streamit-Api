@@ -176,7 +176,6 @@ class CatalogController
                 .andWhere { serieTable[added].greater(recentAdded.toString()) }
                 .orderBy(serieTable[added], SortOrder.DESC)
                 .mapNotNull {
-                    println(it)
                     val added = it[serieTable[added]]
                     val recent = added.epochSecond > dateTime.toEpochSecond(zone)
                     updated.add(Catalog.fromRow(it, recent))

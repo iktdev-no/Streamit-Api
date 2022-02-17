@@ -74,7 +74,6 @@ class ProgressController
     @GetMapping("/progress/{guid}/movie")
     fun getMovieProgressForUser(@PathVariable guid: String): List<ProgressMovie>?
     {
-        System.out.println(":|")
         val _progress: MutableList<ProgressMovie> = mutableListOf()
         transaction(DataSource().getConnection()) {
             progress
