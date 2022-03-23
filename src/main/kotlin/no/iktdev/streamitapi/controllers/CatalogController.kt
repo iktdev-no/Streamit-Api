@@ -62,18 +62,13 @@ class CatalogController
     @GetMapping("/serie")
     fun allSeries(): List<Catalog>
     {
-        val _serie: MutableList<Catalog> = mutableListOf()
-        transaction(DataSource().getConnection()) {
-            catalog
-                .selectAll()
+        val serie: List<Catalog> = transaction {
+            catalog.selectAll()
                 .andWhere { catalog.collection.isNotNull() }
                 .andWhere { catalog.type.eq("serie") }
-                .mapNotNull {
-                    _serie.add(Catalog.fromRow(it))
-                }
+                .mapNotNull { Catalog.fromRow(it) }
         }
-
-        return _serie
+        return serie
     }
 
     /**
@@ -105,23 +100,14 @@ class CatalogController
         if (collection.isNullOrEmpty()) {
             return null
         }
-        var _serie: Serie? = null
-        transaction {
-            val serieFlat: MutableList<SerieFlat> = mutableListOf()
-            catalog
-                .join(serie, JoinType.INNER)
-                {
-                    catalog.collection eq serie.collection
-                }
+
+        val flatten: List<SerieFlat> = transaction {
+            catalog.join(serie, JoinType.INNER) { catalog.collection eq serie.collection }
                 .select { catalog.collection.eq(collection) }
                 .andWhere { catalog.collection.isNotNull() }
-                .mapNotNull {
-                    serieFlat.add(SerieFlat.fromRow(it))
-                }
-            _serie = serieHelper.map().mergeSerie(serieFlat)
-
+                .mapNotNull { SerieFlat.fromRow(it) }
         }
-        return _serie
+        return serieHelper.map().mergeSerie(flatten)
     }
 
     @GetMapping("/new")

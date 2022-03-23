@@ -46,6 +46,7 @@ class serieHelper
                 }
             }
             serie.seasons = listOfMap(seasonMap)
+            serie.seasons.sortedBy { it.season }
             return serie
         }
 
