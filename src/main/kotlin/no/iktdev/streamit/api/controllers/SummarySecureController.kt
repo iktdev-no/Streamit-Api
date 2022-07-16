@@ -1,6 +1,8 @@
 package no.iktdev.streamit.api.controllers
 
 import no.iktdev.streamit.api.classes.Summary
+import no.iktdev.streamit.api.controllers.annotations.Authentication
+import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.SummaryLogic
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/secure"])
 class SummarySecureController {
 
-
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/summary/{id}")
     fun getSummaryById(@PathVariable id: Int): List<Summary> {
         return if (id > -1) SummaryLogic.Get().getSummaryById(id) else emptyList()

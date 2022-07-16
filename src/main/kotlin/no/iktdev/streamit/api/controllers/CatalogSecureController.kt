@@ -4,6 +4,8 @@ import no.iktdev.streamit.api.classes.Catalog
 import no.iktdev.streamit.api.classes.Movie
 import no.iktdev.streamit.api.classes.Response
 import no.iktdev.streamit.api.classes.Serie
+import no.iktdev.streamit.api.controllers.annotations.Authentication
+import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.CatalogLogic
 import no.iktdev.streamit.api.database.operations.CatalogItemCreateOrUpdate
 import no.iktdev.streamit.api.database.operations.CatalogItemRemovalService
@@ -13,16 +15,19 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path = ["/secure"])
 class CatalogSecureController {
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/catalog")
     fun all(): List<Catalog> {
         return CatalogLogic.Get().allItems()
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/new")
     fun getNewContent(): List<Catalog> {
         return CatalogLogic.Get().newContent()
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/movie")
     fun allMovies(): List<Catalog> {
         return CatalogLogic.Get().allMovies()
@@ -33,7 +38,7 @@ class CatalogSecureController {
         return if (id != null && id > -1) CatalogLogic.Get().movieById(id) else null
     }
 
-
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/serie")
     fun allSeries(): List<Catalog> {
         return CatalogLogic.Get().allSeries()
@@ -44,6 +49,7 @@ class CatalogSecureController {
         return if (!collection.isNullOrEmpty()) CatalogLogic.Get().serieByCollection(collection) else null
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/updated")
     fun getUpdatedSeries(): List<Catalog> {
         return CatalogLogic.Get().updatedSeries()

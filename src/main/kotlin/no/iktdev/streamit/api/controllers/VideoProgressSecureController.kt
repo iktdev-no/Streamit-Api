@@ -16,32 +16,37 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(path = ["/secure"])
 class VideoProgressSecureController {
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}")
     fun allProgressOnGuid(@PathVariable guid: String): List<BaseProgress> {
         return VideoProgressLogic.Get().getProgressOnGuid(guid)
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/movie")
     fun allProgressOnGuidForMovies(@PathVariable guid: String): List<ProgressMovie> {
         return VideoProgressLogic.Get().getProgressOnGuidForMovies(guid)
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/serie")
     fun allProgressOnGuidForSerie(@PathVariable guid: String): List<ProgressSerie> {
         return VideoProgressLogic.Get().getProgressOnGuidForSeries(guid)
     }
 
-
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/movie/{title}")
     fun getProgressForUserWithMovieTitle(@PathVariable guid: String, @PathVariable title: String): ProgressMovie? {
         return VideoProgressLogic.Get().getProgressOnGuidWithMovieTitle(guid, title)
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/serie/{title}")
     fun getProgressForUserWithSerieTitle(@PathVariable guid: String, @PathVariable title: String): ProgressSerie? {
         return VideoProgressLogic.Get().getProgressOnGuidWithSerieTitle(guid, title)
     }
 
+    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/continue")
     fun getContinue(@PathVariable guid: String): List<BaseProgress> {
         return VideoProgressLogic.Get().getContinueOnForGuid(guid)
