@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "no.iktdev"
-version = "0.0.4-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 base.archivesBaseName = "streamit.api"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
@@ -37,9 +37,9 @@ dependencies {
 	implementation("io.springfox:springfox-swagger2:$swaggerVersion")
 	implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
-	implementation ("com.google.code.gson:gson:2.8.7")
+	implementation ("com.google.code.gson:gson:2.9.0")
 
-	implementation ("com.auth0:java-jwt:3.19.2")
+	implementation ("com.auth0:java-jwt:4.0.0")
 
 }
 
