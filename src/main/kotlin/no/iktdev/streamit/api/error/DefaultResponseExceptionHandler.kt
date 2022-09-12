@@ -17,6 +17,7 @@ class DefaultResponseExceptionHandler: ResponseEntityExceptionHandler() {
     @ExceptionHandler
     final fun handleGeneralException(exception: Exception, request: WebRequest): ResponseEntity<Response>
     {
+        exception.printStackTrace()
         val response = Response(false, exception.message.toString())
         return ResponseEntity(response, HttpStatus.NOT_ACCEPTABLE)
     }
