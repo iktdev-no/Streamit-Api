@@ -1,9 +1,6 @@
 package no.iktdev.streamit.api.controllers
 
-import no.iktdev.streamit.api.classes.BaseProgress
-import no.iktdev.streamit.api.classes.ProgressMovie
-import no.iktdev.streamit.api.classes.ProgressSerie
-import no.iktdev.streamit.api.classes.Response
+import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.logic.VideoProgressLogic
 import no.iktdev.streamit.api.services.database.ProgressService
 import org.springframework.http.HttpStatus
@@ -41,8 +38,13 @@ class VideoProgressOpenController {
     }
 
     @GetMapping("/progress/{guid}/continue")
-    fun getContinue(@PathVariable guid: String): List<BaseProgress> {
+    fun getContinue(@PathVariable guid: String): List<BaseCatalog> {
         return VideoProgressLogic.Get().getContinueOnForGuid(guid)
+    }
+
+    @GetMapping("/progress/{guid}/continue/serie")
+    fun getContinueSerie(@PathVariable guid: String): List<Serie> {
+        return VideoProgressLogic.Get().getContinueSerieOnForGuid(guid)
     }
 
     /**

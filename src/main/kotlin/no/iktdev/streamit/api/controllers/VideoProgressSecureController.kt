@@ -1,9 +1,6 @@
 package no.iktdev.streamit.api.controllers
 
-import no.iktdev.streamit.api.classes.BaseProgress
-import no.iktdev.streamit.api.classes.ProgressMovie
-import no.iktdev.streamit.api.classes.ProgressSerie
-import no.iktdev.streamit.api.classes.Response
+import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.VideoProgressLogic
@@ -48,7 +45,7 @@ class VideoProgressSecureController {
 
     @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/progress/{guid}/continue")
-    fun getContinue(@PathVariable guid: String): List<BaseProgress> {
+    fun getContinue(@PathVariable guid: String): List<BaseCatalog> {
         return VideoProgressLogic.Get().getContinueOnForGuid(guid)
     }
 

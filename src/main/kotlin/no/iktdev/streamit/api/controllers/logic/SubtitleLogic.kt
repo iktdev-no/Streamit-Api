@@ -1,6 +1,7 @@
 package no.iktdev.streamit.api.controllers.logic
 
 import no.iktdev.streamit.api.classes.Subtitle
+import no.iktdev.streamit.api.database.queries.QSubtitle
 import no.iktdev.streamit.api.database.subtitle
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -16,14 +17,7 @@ class SubtitleLogic {
      * @param format VTT,SRT,SMI,ASS
      */
     fun videoSubtitle(title: String, format: String?): List<Subtitle> {
-        return transaction {
-            val result = if (format.isNullOrEmpty())
-                subtitle.select { subtitle.title eq title }
-            else
-                subtitle.select { subtitle.title eq title }
-                    .andWhere { subtitle.format eq format }
-            result.mapNotNull { Subtitle.fromRow(it) }
-        }
+        return QSubtitle().selectSubtitleForVideo(title, format)
     }
 
     /**

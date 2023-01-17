@@ -48,7 +48,7 @@ data class ProgressMovie(
     override val type: String,
     val progress: Int,
     val duration: Int,
-    val played: Int,
+    var played: Int,
     val video: String?
 
 ): BaseProgress()

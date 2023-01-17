@@ -50,7 +50,7 @@ class serieHelper
             return serie
         }
 
-        private fun listOfMap(items: MutableMap<Int, MutableList<Episode>>): List<Season>
+        private fun listOfMap(items: MutableMap<Int, MutableList<Episode>>): List<Season<Episode>>
         {
             return items.toList().map {
                 Season(it.first, it.second)
@@ -91,7 +91,7 @@ class serieHelper
                             collection = serie.collection ?: serie.title,
                             season = season.season,
                             episode = episode.episode,
-                            episodeTitle = episode.title,
+                            episodeTitle = if (episode is Episode) episode.title else "",
                             video = episode.video,
                             genres = serie.genres,
                             recent = serie.recent
