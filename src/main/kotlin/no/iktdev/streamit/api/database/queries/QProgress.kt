@@ -152,10 +152,10 @@ class QProgress {
     }
 
     fun upsertSerie(serie: ProgressSerie) {
-        val mapped = serieToProgressTable(serie)
-        if (mapped.any { it.duration <= 0 }) {
+        if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
             Log(this::class.java).error("$serie")
         }
+        val mapped = serieToProgressTable(serie)
         mapped.forEach { entry ->
             val record = selectSerieRecordOnGuidAndCombinationValues(entry)
             transaction {
