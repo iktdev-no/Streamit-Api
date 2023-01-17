@@ -152,40 +152,42 @@ class QProgress {
     }
 
     fun upsertSerie(serie: ProgressSerie) {
-        if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
-            Log(this::class.java).error("$serie")
-        }
+        /*if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
+        }*/
         val mapped = serieToProgressTable(serie)
         mapped.forEach { entry ->
-            val record = selectSerieRecordOnGuidAndCombinationValues(entry)
-            transaction {
-                if (record != null) {
-                    progress.update({ progress.id eq record[progress.id] }) { table ->
-                        table[this.video] = video
-                        table[this.progress] = entry.progress
-                        table[this.duration] = entry.duration
-                        table[this.played] = entry.played
-                        table[this.title] = title
-                        if (entry.video?.isNotBlank() == true) {
-                            table[this.video] = entry.video
+            if (entry.duration == 0 || entry.progress == 0) {
+                Log(this::class.java).error("Skipping: $entry")
+            } else {
+                val record = selectSerieRecordOnGuidAndCombinationValues(entry)
+                transaction {
+                    if (record != null) {
+                        progress.update({ progress.id eq record[progress.id] }) { table ->
+                            table[this.video] = video
+                            table[this.progress] = entry.progress
+                            table[this.duration] = entry.duration
+                            table[this.played] = entry.played
+                            table[this.title] = title
+                            if (entry.video?.isNotBlank() == true) {
+                                table[this.video] = entry.video
+                            }
                         }
-                    }
-                } else {
-                    progress.insert { table ->
-                        table[this.guid] = entry.guid
-                        table[this.type] = entry.type
-                        table[this.title] = entry.title
-                        table[this.progress] = entry.progress
-                        table[this.duration] = entry.duration
-                        table[this.played] = entry.played
-                        table[this.video] = entry.video ?: ""
-                        table[this.collection] = entry.collection ?: ""
-                        table[this.episode] = entry.episode ?: (-99..-1).random()
-                        table[this.season] = entry.season ?: (-99..-1).random()
+                    } else {
+                        progress.insert { table ->
+                            table[this.guid] = entry.guid
+                            table[this.type] = entry.type
+                            table[this.title] = entry.title
+                            table[this.progress] = entry.progress
+                            table[this.duration] = entry.duration
+                            table[this.played] = entry.played
+                            table[this.video] = entry.video ?: ""
+                            table[this.collection] = entry.collection ?: ""
+                            table[this.episode] = entry.episode ?: (-99..-1).random()
+                            table[this.season] = entry.season ?: (-99..-1).random()
+                        }
                     }
                 }
             }
-
         }
     }
 
