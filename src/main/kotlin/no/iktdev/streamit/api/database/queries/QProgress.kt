@@ -167,7 +167,7 @@ class QProgress {
                         table[this.played] = entry.played
                         table[this.title] = title
                         if (entry.video?.isNotBlank() == true) {
-                            table[this.video] = movie.video
+                            table[this.video] = entry.video
                         }
                     }
                 } else {
