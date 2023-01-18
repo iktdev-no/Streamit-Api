@@ -74,10 +74,15 @@ class VideoProgressLogic {
             return if (catalog == null || table.season == null || table.episode == null) {
                 null
             } else {
-                catalog.seasons.filter { it.season >= table.season }
+                catalog.seasons = catalog.seasons.filter { it.season >= table.season }
                 val currentSeason = catalog.seasons.find { it.season == table.season } ?: return null
-                if (!currentSeason.episodes.removeIf { it.episode < table.episode })
-                    return null
+                currentSeason.episodes.removeIf { it.episode < table.episode }
+                if (currentSeason.episodes.isEmpty() ||
+                    (currentSeason.episodes.size == 1 && currentSeason.episodes.lastOrNull() != null && (currentSeason.episodes.last().duration - 10000) > currentSeason.episodes.last().progress)) {
+                    catalog.seasons = catalog.seasons.filter { it.season != currentSeason.season }
+                    return catalog
+                }
+
                 currentSeason.episodes.find { it.episode == table.episode }.apply {
                     this?.progress = table.progress
                     this?.duration = table.duration
