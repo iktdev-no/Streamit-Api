@@ -70,6 +70,7 @@ class QProgress {
                 .select { progress.played.isNotNull() and progress.played.greater(0) }
                 .andWhere { progress.guid eq guid }
                 .andWhere { progress.type eq "movie" }
+                .andWhere { progress.progress greater 0 }
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .mapNotNull {
@@ -97,6 +98,7 @@ class QProgress {
                 .select { progress.played.isNotNull() }
                 .andWhere { progress.guid eq guid }
                 .andWhere { progress.type eq "serie" }
+                .andWhere { progress.progress greater 0 }
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .mapNotNull {
