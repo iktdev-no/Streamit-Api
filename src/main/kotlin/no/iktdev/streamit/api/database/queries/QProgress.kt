@@ -70,7 +70,6 @@ class QProgress {
                 .select { progress.played.isNotNull() and progress.played.greater(0) }
                 .andWhere { progress.guid eq guid }
                 .andWhere { progress.type eq "movie" }
-                .andWhere { progress.progress greater 0 }
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .mapNotNull {
@@ -85,8 +84,8 @@ class QProgress {
             val msx = progress.season.max().alias(progress.season.name)
             val mex = progress.episode.max().alias(progress.episode.name)
 
-            val episodeTable = progress.slice(mex, progress.title).selectAll().groupBy(progress.title).alias("episodeTable")
-            val seasonTable = progress.slice(msx, progress.title).selectAll().groupBy(progress.title).alias("seasonTable")
+            val episodeTable = progress.slice(mex, progress.title).selectAll().andWhere { progress.progress greater 0 }.groupBy(progress.title).alias("episodeTable")
+            val seasonTable = progress.slice(msx, progress.title).selectAll().andWhere { progress.progress greater 0 }.groupBy(progress.title).alias("seasonTable")
 
             progress
                 .join(episodeTable, JoinType.INNER) {
@@ -97,8 +96,8 @@ class QProgress {
                 }
                 .select { progress.played.isNotNull() }
                 .andWhere { progress.guid eq guid }
-                .andWhere { progress.type eq "serie" }
                 .andWhere { progress.progress greater 0 }
+                .andWhere { progress.type eq "serie" }
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .mapNotNull {
