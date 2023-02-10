@@ -96,7 +96,6 @@ class QProgress {
                 }
                 .select { progress.played.isNotNull() }
                 .andWhere { progress.guid eq guid }
-                .andWhere { progress.progress greater 0 }
                 .andWhere { progress.type eq "serie" }
                 .orderBy(progress.played, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
