@@ -23,7 +23,7 @@ object genre: IntIdTable() {
 }
 
 object movie: IntIdTable() {
-    val video: Column<String> = varchar("video", 100).uniqueIndex()
+    val video: Column<String> = varchar("video", 250).uniqueIndex()
 }
 
 object serie: IntIdTable() {
@@ -31,7 +31,7 @@ object serie: IntIdTable() {
     val episode: Column<Int> = integer("episode")
     val season: Column<Int> = integer("season")
     val collection: Column<String> = varchar("collection", 250)
-    val video: Column<String> = varchar("video", 100).uniqueIndex()
+    val video: Column<String> = varchar("video", 250).uniqueIndex()
     val added: Column<Instant> = timestamp("added")
 }
 
@@ -48,6 +48,7 @@ object summary: IntIdTable() {
     val description: Column<String> = text("description")
     val language: Column<String> = varchar("language", 16)
     val cid: Column<Int> = integer("cid")
+    val unqfull: Column<String> = varchar("unqfull", 250).uniqueIndex()
 }
 
 object users: Table() {

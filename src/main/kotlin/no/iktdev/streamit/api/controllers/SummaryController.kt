@@ -9,13 +9,26 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
-@RequestMapping(path = ["/secure"])
-class SummarySecureController {
+open class SummaryController {
 
-    @Authentication(AuthenticationModes.SOFT)
     @GetMapping("/summary/{id}")
-    fun getSummaryById(@PathVariable id: Int): List<Summary> {
+    open fun getSummaryById(@PathVariable id: Int): List<Summary> {
         return if (id > -1) SummaryLogic.Get().getSummaryById(id) else emptyList()
+    }
+
+    @RestController
+    @RequestMapping(path = ["/open"])
+    class SummaryOpenController: SummaryController() {
+
+    }
+
+    @RestController
+    @RequestMapping(path = ["/secure"])
+    class SummarySecureController: SummaryController() {
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun getSummaryById(id: Int): List<Summary> {
+            return super.getSummaryById(id)
+        }
     }
 }

@@ -11,8 +11,17 @@ import org.springframework.web.bind.annotation.RestController
 
 open class SubtitleController {
 
-    fun movieSubtitle(title: String, format: String? = null) = SubtitleLogic().videoSubtitle(title, format)
-    fun serieSubtitle(collection: String, format: String? = null) = SubtitleLogic().serieSubtitle(collection, format)
+    @GetMapping(path = [
+        "/movie/{title}",
+        "/movie/{title}/{format}"
+    ])
+    open fun movieSubtitle(title: String, format: String? = null) = SubtitleLogic().videoSubtitle(title, format)
+
+    @GetMapping(path = [
+        "/serie/{collection}",
+        "/serie/{collection}/{format}"
+    ])
+    open fun serieSubtitle(collection: String, format: String? = null) = SubtitleLogic().serieSubtitle(collection, format)
 
     @RestController
     @RequestMapping(path = ["/open/subtitle"])
@@ -23,18 +32,6 @@ open class SubtitleController {
             return SubtitleLogic().videoSubtitle(name, null)
         }
 
-        @GetMapping(path = [
-            "/movie/{title}",
-            "/movie/{title}/{format}"
-        ])
-        fun movieSubtitleWithFormat(@PathVariable title: String, @PathVariable format: String? = null) = super.movieSubtitle(title, format)
-
-        @GetMapping(path = [
-            "/serie/{collection}",
-            "/serie/{collection}/{format}"
-        ])
-        fun serieSubtitleWithFormat(@PathVariable collection: String, @PathVariable format: String? = null) = super.serieSubtitle(collection, format)
-
     }
 
     @RestController
@@ -42,24 +39,21 @@ open class SubtitleController {
     class Secure: SubtitleController() {
 
         @Authentication(AuthenticationModes.SOFT)
+
         @GetMapping("/{name}")
         fun anySubtitle(@PathVariable name: String): List<Subtitle> {
             return SubtitleLogic().videoSubtitle(name, null)
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        @GetMapping(path = [
-            "/movie/{title}",
-            "/movie/{title}/{format}"
-        ])
-        fun movieSubtitleWithFormat(@PathVariable title: String, @PathVariable format: String? = null) = super.movieSubtitle(title, format)
+        override fun movieSubtitle(title: String, format: String?): List<Subtitle> {
+            return super.movieSubtitle(title, format)
+        }
 
         @Authentication(AuthenticationModes.SOFT)
-        @GetMapping(path = [
-            "/serie/{collection}",
-            "/serie/{collection}/{format}"
-        ])
-        fun serieSubtitleWithFormat(@PathVariable collection: String, @PathVariable format: String? = null) = super.serieSubtitle(collection, format)
+        override fun serieSubtitle(collection: String, format: String?): List<Subtitle> {
+            return super.serieSubtitle(collection, format)
+        }
 
     }
 
