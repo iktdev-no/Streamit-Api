@@ -19,7 +19,7 @@ open class AuthenticationController: Authy() {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: Authy() {
+    class Open: AuthenticationController() {
     }
 
     @RestController
