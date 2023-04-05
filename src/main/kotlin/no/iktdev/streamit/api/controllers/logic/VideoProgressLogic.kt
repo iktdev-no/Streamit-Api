@@ -15,6 +15,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class VideoProgressLogic {
 
@@ -69,26 +71,48 @@ class VideoProgressLogic {
             }
         }
 
+        //private fun apply
+
         private fun mapToContinueSerie(table: ProgressTable): Serie? {
             val catalog = if (table.collection != null) QSerie().selectOnCollection(table.collection) else return null
             return if (catalog == null || table.season == null || table.episode == null) {
                 null
             } else {
-                catalog.seasons = catalog.seasons.filter { it.season >= table.season }
-                val currentSeason = catalog.seasons.find { it.season == table.season } ?: return null
-                currentSeason.episodes.removeIf { it.episode < table.episode }
-                if (currentSeason.episodes.isEmpty() ||
-                    (currentSeason.episodes.size == 1 && currentSeason.episodes.lastOrNull() != null && (currentSeason.episodes.last().duration - 10000) > currentSeason.episodes.last().progress)) {
-                    catalog.seasons = catalog.seasons.filter { it.season != currentSeason.season }
-                    return catalog
+                val minutesRemaining = ((table.duration - table.progress) / 60000.0 ).roundToInt()
+
+                val season = if (minutesRemaining > 10) {
+                    val episode = catalog
+                        .seasons.find { it.season == table.season }
+                        ?.episodes?.find { it.episode == table.episode }?.apply {
+                            this.progress = table.progress
+                            this.duration = table.duration
+                            this.played = table.played
+                        }
+                    if (episode != null) Season(table.season, mutableListOf(episode)) else null
+                } else {
+                    //val nextInSeason = catalog.seasons.find { it.season == table.season }?.episodes?.firstOrNull { e -> e.episode > table.episode }
+
+                    val withinSeasonWithNextEpisode = catalog.seasons.find { it.season == table.season }?.apply {
+                        val firstEpisode = this.episodes.firstOrNull { e -> e.episode > table.episode }
+                        this.episodes.removeIf { it != firstEpisode }
+                    }
+
+                    val seasonWithNextEpisode = catalog.seasons.firstOrNull { s -> s.season > table.season }?.apply {
+                        val firstEpisode = this.episodes.firstOrNull()
+                        this.episodes.removeAll {  it != firstEpisode }
+                    }
+
+                    if (withinSeasonWithNextEpisode != null && withinSeasonWithNextEpisode.episodes.isNotEmpty()) withinSeasonWithNextEpisode else seasonWithNextEpisode
                 }
 
-                currentSeason.episodes.find { it.episode == table.episode }.apply {
-                    this?.progress = table.progress
-                    this?.duration = table.duration
-                    this?.played = table.played
+                if (season != null && season.episodes.isNotEmpty()) {
+                    catalog.apply {
+                        this.seasons = listOf(season)
+                    }
+                } else {
+                    null
                 }
-                catalog
+
             }
         }
 
