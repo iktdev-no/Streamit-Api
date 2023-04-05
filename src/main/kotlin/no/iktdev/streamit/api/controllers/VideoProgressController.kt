@@ -25,6 +25,11 @@ open class VideoProgressController {
         return VideoProgressLogic.Get().getProgressOnGuidForSeries(guid)
     }
 
+    @GetMapping("/progress/{guid}/after/{time}")
+    open fun allProgressOnGuidAfterTime(@PathVariable guid: String, time: Int): List<BaseProgress> {
+        return VideoProgressLogic.Get().getProgressOnGuidAfter(guid, time)
+    }
+
 
     @GetMapping("/progress/{guid}/movie/{title}")
     open fun getProgressForUserWithMovieTitle(@PathVariable guid: String, @PathVariable title: String): ProgressMovie? {
@@ -88,6 +93,11 @@ open class VideoProgressController {
         @Authentication(AuthenticationModes.SOFT)
         override fun allProgressOnGuidForSerie(@PathVariable guid: String): List<ProgressSerie> {
             return super.allProgressOnGuidForSerie(guid)
+        }
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun allProgressOnGuidAfterTime(guid: String, time: Int): List<BaseProgress> {
+            return super.allProgressOnGuidAfterTime(guid, time)
         }
 
         @Authentication(AuthenticationModes.SOFT)

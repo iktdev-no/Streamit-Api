@@ -44,6 +44,16 @@ class QProgress {
         }
     }
 
+
+    fun selectAllForGuidAfter(guid: String, time: Int): List<ProgressTable> {
+        return transaction {
+            progress.select { progress.guid eq guid }
+                .andWhere { progress.played greater time }
+                .mapNotNull { ProgressTable.fromRow(it) }
+        }
+    }
+
+
     fun selectOnMovieTitleForGuid(guid: String, title: String): ProgressTable? {
         val result = transaction {
             progress.select { progress.guid eq guid }
