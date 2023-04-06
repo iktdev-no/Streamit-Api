@@ -2,10 +2,7 @@ package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.Log
-import no.iktdev.streamit.api.classes.BaseProgress
-import no.iktdev.streamit.api.classes.ProgressMovie
-import no.iktdev.streamit.api.classes.ProgressSerie
-import no.iktdev.streamit.api.classes.ProgressTable
+import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.database.movie
 import no.iktdev.streamit.api.database.progress
 import no.iktdev.streamit.api.helper.progressHelper
@@ -125,6 +122,7 @@ class QProgress {
         }
     }
 
+    @Deprecated("Now")
     fun upsertMovie(movie: ProgressMovie) {
         if (movie.duration == 0) {
             Log(this::class.java ).error("${movie.title}: Duration is 0")
@@ -161,6 +159,45 @@ class QProgress {
             }
         }
     }
+
+    fun upsertMovieOnGuid(guid: String, movie: Movie) {
+        if (movie.duration == 0) {
+            Log(this::class.java ).error("${movie.title}: Duration is 0")
+        } else if (movie.video.isEmpty()) {
+            Log(this::class.java ).error("${movie.title}: Video is null or empty")
+        }
+        if (movie.played <= 0)
+            movie.played = (System.currentTimeMillis() / 1000L).toInt();
+
+        transaction {
+            val presentRecord = selectMovieRecordOnGuidAndTitle(guid, movie.title)
+            if (presentRecord != null) {
+                progress.update({ progress.id eq presentRecord[progress.id] })
+                {
+                    it[this.progress] = movie.progress
+                    it[this.duration] = movie.duration
+                    it[this.played] = movie.played
+                    if (movie.video?.isNotBlank() == true) {
+                        it[this.video] = movie.video
+                    }
+                }
+            } else {
+                progress.insert {
+                    it[this.guid] = guid
+                    it[this.type] = movie.type
+                    it[this.title] = movie.title.trim()
+                    it[this.progress] = movie.progress
+                    it[this.duration] = movie.duration
+                    it[this.played] = movie.played
+                    if (movie.video.isNotBlank()) {
+                        it[this.video] = movie.video
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun selectMovieRecordOnGuidAndTitle(guid: String, title: String): ResultRow? {
         return transaction {
             progress
@@ -171,6 +208,7 @@ class QProgress {
         }
     }
 
+    @Deprecated("Now")
     fun upsertSerie(serie: ProgressSerie) {
         /*if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
         }*/
@@ -215,6 +253,51 @@ class QProgress {
         }
     }
 
+    fun upsertSerieOnGuid(guid: String, serie: Serie) {
+        /*if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
+        }*/
+        val mapped = serieToProgressTableWithGuid(guid, serie)
+        mapped.forEach { entry ->
+            if (entry.duration == 0 && entry.progress == 0) {
+                Log(this::class.java).error("Skipping: $entry")
+            } else {
+                val record = selectSerieRecordOnGuidAndCombinationValues(entry)
+                if (entry.progress == 0 && (record?.get(progress.progress) ?: 0) != 0) {
+                    Log(this::class.java).error("Skipping: $entry as it looks like progress is lost")
+                } else {
+                    transaction {
+                        if (record != null) {
+                            progress.update({ progress.id eq record[progress.id] }) { table ->
+                                table[this.video] = video
+                                table[this.progress] = entry.progress
+                                table[this.duration] = entry.duration
+                                table[this.played] = entry.played
+                                table[this.title] = title
+                                if (entry.video?.isNotBlank() == true) {
+                                    table[this.video] = entry.video
+                                }
+                            }
+                        } else {
+                            progress.insert { table ->
+                                table[this.guid] = entry.guid
+                                table[this.type] = entry.type
+                                table[this.title] = entry.title
+                                table[this.progress] = entry.progress
+                                table[this.duration] = entry.duration
+                                table[this.played] = entry.played
+                                table[this.video] = entry.video ?: ""
+                                table[this.collection] = entry.collection ?: ""
+                                table[this.episode] = entry.episode ?: (-99..-1).random()
+                                table[this.season] = entry.season ?: (-99..-1).random()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun selectSerieRecordOnGuidAndCombinationValues(it: ProgressTable): ResultRow? {
         return transaction {
             progress
@@ -227,6 +310,25 @@ class QProgress {
         }
     }
 
+    private fun serieToProgressTableWithGuid(guid: String, serie: Serie): List<ProgressTable> {
+        return serie.seasons.flatMap { season -> season.episodes.map {
+            ProgressTable(
+                id = -1,
+                guid = guid,
+                type = "serie",
+                title = serie.title,
+                collection = serie.collection,
+                video = it.video,
+                season = season.season,
+                episode = it.episode,
+                progress = it.progress,
+                duration = it.duration,
+                played = it.played
+            )
+        }}
+    }
+
+    @Deprecated("Now")
     private fun serieToProgressTable(serie: ProgressSerie): List<ProgressTable> {
         return serie.seasons.flatMap { season -> season.episodes.map {
             ProgressTable(

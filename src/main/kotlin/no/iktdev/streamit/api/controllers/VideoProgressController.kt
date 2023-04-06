@@ -4,6 +4,7 @@ import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.VideoProgressLogic
+import no.iktdev.streamit.api.database.queries.QProgress
 import no.iktdev.streamit.api.services.database.ProgressService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -58,16 +59,33 @@ open class VideoProgressController {
     **/
 
 
+    @Deprecated("Now")
     @PostMapping("/progress/movie")
     @ResponseStatus(HttpStatus.OK)
     open fun uploadedProgressMovie(@RequestBody progress: ProgressMovie) : ResponseEntity<String> {
         return VideoProgressLogic.Post().updateOrInsertProgressForMovie(progress)
     }
 
+    @Deprecated("Now")
     @PostMapping("/progress/serie")
     @ResponseStatus(HttpStatus.OK)
     open fun uploadedProgressSerie(@RequestBody progress: ProgressSerie): ResponseEntity<String> {
         return VideoProgressLogic.Post().updateOrInsertProgressForSerie(progress)
+    }
+
+
+    @PostMapping("/progress/{guid}/movie")
+    @ResponseStatus(HttpStatus.OK)
+    open fun uploadedProgressMovieOnGuid(@PathVariable guid: String, @RequestBody progress: Movie) : ResponseEntity<String> {
+        QProgress().upsertMovieOnGuid(guid, progress)
+        return ResponseEntity("Ok", HttpStatus.OK)
+    }
+
+    @PostMapping("/progress/{guid}/serie")
+    @ResponseStatus(HttpStatus.OK)
+    open fun uploadedProgressSerieOnGuid(@PathVariable guid: String, @RequestBody progress: Serie): ResponseEntity<String> {
+        QProgress().upsertSerieOnGuid(guid, progress)
+        return ResponseEntity("Ok", HttpStatus.OK)
     }
 
 
