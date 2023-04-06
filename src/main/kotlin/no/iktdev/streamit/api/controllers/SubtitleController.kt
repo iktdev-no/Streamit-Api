@@ -11,26 +11,30 @@ import org.springframework.web.bind.annotation.RestController
 
 open class SubtitleController {
 
-    @GetMapping(path = [
+    @GetMapping(value = [
         "/movie/{title}",
         "/movie/{title}/{format}"
     ])
-    open fun movieSubtitle(title: String, format: String? = null) = SubtitleLogic().videoSubtitle(title, format)
+    open fun movieSubtitle(@PathVariable title: String, @PathVariable format: String? = null): List<Subtitle> {
+        return SubtitleLogic().videoSubtitle(title, format)
+    }
 
-    @GetMapping(path = [
+    @GetMapping(value = [
         "/serie/{collection}",
         "/serie/{collection}/{format}"
     ])
-    open fun serieSubtitle(collection: String, format: String? = null) = SubtitleLogic().serieSubtitle(collection, format)
+    open fun serieSubtitle(@PathVariable collection: String, @PathVariable format: String? = null): List<Subtitle> {
+        return SubtitleLogic().serieSubtitle(collection, format)
+    }
+
+    @GetMapping("/{name}")
+    open fun anySubtitle(@PathVariable name: String): List<Subtitle> {
+        return SubtitleLogic().videoSubtitle(name, null)
+    }
 
     @RestController
     @RequestMapping(path = ["/open/subtitle"])
     class Open: SubtitleController() {
-
-        @GetMapping("/{name}")
-        fun anySubtitle(@PathVariable name: String): List<Subtitle> {
-            return SubtitleLogic().videoSubtitle(name, null)
-        }
 
     }
 
@@ -41,8 +45,8 @@ open class SubtitleController {
         @Authentication(AuthenticationModes.SOFT)
 
         @GetMapping("/{name}")
-        fun anySubtitle(@PathVariable name: String): List<Subtitle> {
-            return SubtitleLogic().videoSubtitle(name, null)
+        override fun anySubtitle(@PathVariable name: String): List<Subtitle> {
+            return anySubtitle(name)
         }
 
         @Authentication(AuthenticationModes.SOFT)
