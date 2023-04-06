@@ -45,9 +45,19 @@ class QProgress {
     }
 
 
-    fun selectAllForGuidAfter(guid: String, time: Int): List<ProgressTable> {
+    fun selectSerieForGuidAfter(guid: String, time: Int): List<ProgressTable> {
         return transaction {
             progress.select { progress.guid eq guid }
+                .andWhere { progress.type eq "serie" }
+                .andWhere { progress.played greater time }
+                .mapNotNull { ProgressTable.fromRow(it) }
+        }
+    }
+
+    fun selectMovieForGuidAfter(guid: String, time: Int): List<ProgressTable> {
+        return transaction {
+            progress.select { progress.guid eq guid }
+                .andWhere { progress.type eq "movie" }
                 .andWhere { progress.played greater time }
                 .mapNotNull { ProgressTable.fromRow(it) }
         }

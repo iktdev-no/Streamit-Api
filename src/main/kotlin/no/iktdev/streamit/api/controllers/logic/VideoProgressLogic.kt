@@ -46,9 +46,14 @@ class VideoProgressLogic {
             return if(result.isNotEmpty()) progressHelper.map().mergeSerieTables(result) else null
         }
 
-        fun getProgressOnGuidAfter(guid: String, time: Int): List<BaseProgress> {
-            val result = QProgress().selectAllForGuidAfter(guid, time)
-            return progressHelper.map().fromMixedProgressTable(result)
+        fun getProgressOnGuidSerieAfter(guid: String, time: Int): List<ProgressSerie> {
+            val result = QProgress().selectSerieForGuidAfter(guid, time)
+            return if (result.isNotEmpty()) progressHelper.map().fromSerieProgressTable(result) else emptyList()
+        }
+
+        fun getProgressOnGuidForMovieAfter(guid: String, time: Int): List<ProgressMovie> {
+            val result = QProgress().selectMovieForGuidAfter(guid, time)
+            return result.map { ProgressMovie.fromProgressTable(it) }
         }
 
         fun getContinueOnForGuid(guid: String): List<BaseCatalog> {

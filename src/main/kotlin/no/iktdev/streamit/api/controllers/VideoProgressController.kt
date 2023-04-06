@@ -15,21 +15,23 @@ open class VideoProgressController {
         return VideoProgressLogic.Get().getProgressOnGuid(guid)
     }
 
-    @GetMapping("/progress/{guid}/movie")
-    open fun allProgressOnGuidForMovies(@PathVariable guid: String): List<ProgressMovie> {
-        return VideoProgressLogic.Get().getProgressOnGuidForMovies(guid)
+    @GetMapping(value = [
+        "/progress/{guid}/movie",
+        "/progress/{guid}/movie/after/{time}"
+    ])
+    open fun allProgressOnGuidForMovies(@PathVariable guid: String, @PathVariable time: Int? = null): List<ProgressMovie> {
+        return if (time == null) VideoProgressLogic.Get().getProgressOnGuidForMovies(guid) else
+            VideoProgressLogic.Get().getProgressOnGuidForMovieAfter(guid, time)
     }
 
-    @GetMapping("/progress/{guid}/serie")
-    open fun allProgressOnGuidForSerie(@PathVariable guid: String): List<ProgressSerie> {
-        return VideoProgressLogic.Get().getProgressOnGuidForSeries(guid)
+    @GetMapping(value = [
+        "/progress/{guid}/serie",
+        "/progress/{guid}/serie/after/{time}"
+    ])
+    open fun allProgressOnGuidForSerie(@PathVariable guid: String, @PathVariable time: Int? = null): List<ProgressSerie> {
+        return if (time == null) VideoProgressLogic.Get().getProgressOnGuidForSeries(guid) else
+            VideoProgressLogic.Get().getProgressOnGuidSerieAfter(guid, time)
     }
-
-    @GetMapping("/progress/{guid}/after/{time}")
-    open fun allProgressOnGuidAfterTime(@PathVariable guid: String, time: Int): List<BaseProgress> {
-        return VideoProgressLogic.Get().getProgressOnGuidAfter(guid, time)
-    }
-
 
     @GetMapping("/progress/{guid}/movie/{title}")
     open fun getProgressForUserWithMovieTitle(@PathVariable guid: String, @PathVariable title: String): ProgressMovie? {
@@ -86,19 +88,15 @@ open class VideoProgressController {
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun allProgressOnGuidForMovies(@PathVariable guid: String): List<ProgressMovie> {
-            return super.allProgressOnGuidForMovies(guid)
+        override fun allProgressOnGuidForMovies(@PathVariable guid: String, @PathVariable time: Int?): List<ProgressMovie> {
+            return super.allProgressOnGuidForMovies(guid, time)
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun allProgressOnGuidForSerie(@PathVariable guid: String): List<ProgressSerie> {
-            return super.allProgressOnGuidForSerie(guid)
+        override fun allProgressOnGuidForSerie(@PathVariable guid: String, @PathVariable time: Int?): List<ProgressSerie> {
+            return super.allProgressOnGuidForSerie(guid, time)
         }
 
-        @Authentication(AuthenticationModes.SOFT)
-        override fun allProgressOnGuidAfterTime(guid: String, time: Int): List<BaseProgress> {
-            return super.allProgressOnGuidAfterTime(guid, time)
-        }
 
         @Authentication(AuthenticationModes.SOFT)
         override fun getProgressForUserWithMovieTitle(@PathVariable guid: String, @PathVariable title: String): ProgressMovie? {
