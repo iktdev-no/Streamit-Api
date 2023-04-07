@@ -8,7 +8,7 @@ data class ProgressTable(
     val guid: String,
     val type: String,
     val title: String,
-    val collection: String?,
+    val collection: String,
     val episode: Int?,
     val season: Int?,
     val video: String?, // Might not be recorded
@@ -24,7 +24,7 @@ data class ProgressTable(
             guid = resultRow[progress.guid],
             type = resultRow[progress.type],
             title = resultRow[progress.title],
-            collection = resultRow[progress.collection],
+            collection = resultRow[progress.collection] ?: resultRow[progress.title] ,
             episode = resultRow[progress.episode],
             season = resultRow[progress.season],
             video = resultRow[progress.video],
@@ -40,12 +40,14 @@ abstract class BaseProgress
     abstract val guid: String
     abstract val type: String
     abstract val title: String
+    abstract val collection: String
 }
 
 data class ProgressMovie(
     override val guid: String,
     override val title: String,
     override val type: String,
+    override val collection: String,
     val progress: Int,
     val duration: Int,
     var played: Int,
@@ -60,6 +62,7 @@ data class ProgressMovie(
                 title = item.title,
                 type = item.type,
                 video = item.video,
+                collection = item.collection,
                 progress = item.progress,
                 duration = item.duration,
                 played = item.played
@@ -71,7 +74,8 @@ data class ProgressMovie(
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration = resultRow[progress.duration],
-            played = resultRow[progress.played]
+            played = resultRow[progress.played],
+            collection = resultRow[progress.collection] ?: resultRow[progress.title],
         )
     }
 }
@@ -80,7 +84,7 @@ data class ProgressSerie(
     override val guid: String,
     override val type: String,
     override val title: String,
-    val collection: String?,
+    override val collection: String,
     var seasons: List<ProgressSeason>
 ): BaseProgress()
 {

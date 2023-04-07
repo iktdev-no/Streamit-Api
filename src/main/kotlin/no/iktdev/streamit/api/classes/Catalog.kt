@@ -49,10 +49,11 @@ data class Movie(
     override val id: Int, // id will be catalog id
     val video: String,
     override val title: String,
-    override val cover: String?,
+    override val cover: String? = null,
     override val type: String,
     override val collection: String,
-    override var genres: String?, override val recent: Boolean,
+    override var genres: String? = "",
+    override val recent: Boolean = false,
     var progress: Int = 0,
     var duration: Int = 0,
     var played: Int = 0,
@@ -127,7 +128,7 @@ data class Serie(
     var seasons: List<Season<Episode>>,
     override val id: Int,
     override val title: String,
-    override val cover: String?,
+    override val cover: String? = null,
     override val type: String,
     override val collection: String,
     override var genres: String?, override val recent: Boolean

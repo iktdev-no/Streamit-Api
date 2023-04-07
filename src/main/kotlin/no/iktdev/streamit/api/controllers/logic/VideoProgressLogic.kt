@@ -67,7 +67,7 @@ class VideoProgressLogic {
         }
 
         private fun mapToContinueMovie(table: ProgressTable): Movie? {
-            val movieItem = if (table.title != null) QMovie().selectOnTitle(table.title) else null
+            val movieItem = QMovie().selectOnTitle(table.title)
             return movieItem?.apply {
                 progress = table.progress
                 duration = table.duration
@@ -127,21 +127,5 @@ class VideoProgressLogic {
         }
 
     }
-
-    class Post {
-        fun updateOrInsertProgressForMovie(@RequestBody progress: ProgressMovie): ResponseEntity<String> {
-            QProgress().upsertMovie(progress)
-            //getService()?.upsertProgressMovie(progress) ?: return ResponseEntity("Could not obtain progress service", HttpStatus.INTERNAL_SERVER_ERROR)
-            return ResponseEntity("Ok", HttpStatus.OK)
-        }
-
-        fun updateOrInsertProgressForSerie(@RequestBody progress: ProgressSerie): ResponseEntity<String> {
-            ProgressService.validate().serie(progress)
-            QProgress().upsertSerie(progress)
-           // getService()?.upsertProgressSerie(progress) ?: return ResponseEntity("Could not obtain progress service", HttpStatus.INTERNAL_SERVER_ERROR)
-            return ResponseEntity("Ok", HttpStatus.OK)
-        }
-    }
-
 
 }

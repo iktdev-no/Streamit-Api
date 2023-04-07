@@ -176,6 +176,7 @@ class QProgress {
                 {
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
+                    it[this.collection] = movie.collection
                     it[this.played] = movie.played
                     if (movie.video?.isNotBlank() == true) {
                         it[this.video] = movie.video
@@ -188,6 +189,7 @@ class QProgress {
                     it[this.title] = movie.title.trim()
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
+                    it[this.collection] = movie.collection
                     it[this.played] = movie.played
                     if (movie.video.isNotBlank()) {
                         it[this.video] = movie.video
