@@ -1,5 +1,6 @@
 package no.iktdev.streamit.api.controllers
 
+import com.google.gson.Gson
 import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
@@ -59,33 +60,18 @@ open class VideoProgressController {
     **/
 
 
-    @Deprecated("Now")
-    @PostMapping("/progress/movie")
-    @ResponseStatus(HttpStatus.OK)
-    open fun uploadedProgressMovie(@RequestBody progress: ProgressMovie) : ResponseEntity<String> {
-        return VideoProgressLogic.Post().updateOrInsertProgressForMovie(progress)
-    }
-
-    @Deprecated("Now")
-    @PostMapping("/progress/serie")
-    @ResponseStatus(HttpStatus.OK)
-    open fun uploadedProgressSerie(@RequestBody progress: ProgressSerie): ResponseEntity<String> {
-        return VideoProgressLogic.Post().updateOrInsertProgressForSerie(progress)
-    }
-
-
     @PostMapping("/progress/{guid}/movie")
     @ResponseStatus(HttpStatus.OK)
     open fun uploadedProgressMovieOnGuid(@PathVariable guid: String, @RequestBody progress: Movie) : ResponseEntity<String> {
         QProgress().upsertMovieOnGuid(guid, progress)
-        return ResponseEntity("Ok", HttpStatus.OK)
+        return ResponseEntity.ok(Gson().toJson(Response()))
     }
 
     @PostMapping("/progress/{guid}/serie")
     @ResponseStatus(HttpStatus.OK)
     open fun uploadedProgressSerieOnGuid(@PathVariable guid: String, @RequestBody progress: Serie): ResponseEntity<String> {
         QProgress().upsertSerieOnGuid(guid, progress)
-        return ResponseEntity("Ok", HttpStatus.OK)
+        return ResponseEntity.ok(Gson().toJson(Response()))
     }
 
 
@@ -134,15 +120,15 @@ open class VideoProgressController {
         /**
          * Post mapping below
          **/
-
         @Authentication(AuthenticationModes.STRICT)
-        override fun uploadedProgressMovie(@RequestBody progress: ProgressMovie) : ResponseEntity<String> {
-            return super.uploadedProgressMovie(progress)
+
+        override fun uploadedProgressMovieOnGuid(guid: String, progress: Movie): ResponseEntity<String> {
+            return super.uploadedProgressMovieOnGuid(guid, progress)
         }
-
         @Authentication(AuthenticationModes.STRICT)
-        override fun uploadedProgressSerie(@RequestBody progress: ProgressSerie): ResponseEntity<String> {
-            return super.uploadedProgressSerie(progress)
+
+        override fun uploadedProgressSerieOnGuid(guid: String, progress: Serie): ResponseEntity<String> {
+            return super.uploadedProgressSerieOnGuid(guid, progress)
         }
     }
 
