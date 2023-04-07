@@ -18,13 +18,13 @@ open class SummaryController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class SummaryOpenController: SummaryController() {
+    class OpenSummary: SummaryController() {
 
     }
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class SummarySecureController: SummaryController() {
+    class RestrictedSummary: SummaryController() {
 
         @Authentication(AuthenticationModes.SOFT)
         override fun getSummaryById(id: Int): List<Summary> {

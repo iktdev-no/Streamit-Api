@@ -34,13 +34,13 @@ open class SubtitleController {
 
     @RestController
     @RequestMapping(path = ["/open/subtitle"])
-    class Open: SubtitleController() {
+    class OpenSubtitle: SubtitleController() {
 
     }
 
     @RestController
     @RequestMapping(path = ["/secure/subtitle"])
-    class Secure: SubtitleController() {
+    class RestrictedSubtitle: SubtitleController() {
 
         @Authentication(AuthenticationModes.SOFT)
 

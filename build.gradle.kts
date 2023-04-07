@@ -17,7 +17,6 @@ repositories {
 }
 
 val exposedVersion = "0.38.2"
-val swaggerVersion = "3.0.0"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -34,8 +33,7 @@ dependencies {
 	implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 	implementation ("mysql:mysql-connector-java:8.0.29")
 
-	implementation("io.springfox:springfox-swagger2:$swaggerVersion")
-	implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.4")
 
 	implementation ("com.google.code.gson:gson:2.9.0")
 

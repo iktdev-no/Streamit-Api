@@ -53,7 +53,7 @@ open class CatalogController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: CatalogController() {
+    class OpenCatalog: CatalogController() {
 
 
         /**
@@ -111,7 +111,7 @@ open class CatalogController {
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class Secure: CatalogController() {
+    class RestrictedCatalog: CatalogController() {
 
         @Authentication(AuthenticationModes.SOFT)
         override fun all(): List<Catalog> {

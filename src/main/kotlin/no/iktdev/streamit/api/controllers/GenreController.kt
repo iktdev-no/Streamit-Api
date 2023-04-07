@@ -11,24 +11,26 @@ import org.springframework.web.bind.annotation.RestController
 
 open class GenreController {
 
-    @GetMapping("/genre")
+    @GetMapping("")
     open fun genres(): List<Genre> {
         return QGenre().selectAll()
     }
 
-    @GetMapping("/genre/{id}")
+    @GetMapping("/{id}")
     open fun genre(@PathVariable id: Int = 0): Genre? {
         return QGenre().selectById(id)
     }
 
-    @RestController
-    @RequestMapping(path = ["/open"])
-    class Open: GenreController() {}
+    @RestController("OpenGenreController")
+    @RequestMapping(path = ["/open/genre"])
+    class OpenGenre: GenreController() {
+
+    }
 
 
-    @RestController
-    @RequestMapping(path = ["/secure"])
-    class Secure: GenreController() {
+    @RestController("RestrictedGenreController")
+    @RequestMapping(path = ["/secure/genre"])
+    class RestrictedGenre: GenreController() {
 
         @Authentication(AuthenticationModes.SOFT)
         override fun genres(): List<Genre> {

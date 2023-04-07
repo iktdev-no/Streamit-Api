@@ -44,13 +44,13 @@ open class UserController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: UserController() {
+    class OpenUser: UserController() {
 
     }
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class Secure: UserController() {
+    class RestrictedUser: UserController() {
         @Authentication(AuthenticationModes.STRICT)
         override fun createOrUpdateUser(@RequestBody user: User): ResponseEntity<String> {
             return super.createOrUpdateUser(user)

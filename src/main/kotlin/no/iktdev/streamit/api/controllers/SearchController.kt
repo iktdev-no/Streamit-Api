@@ -28,11 +28,11 @@ open class SearchController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: SearchController() {}
+    class OpenSearch: SearchController() {}
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class Secure: SearchController() {
+    class RestrictedSearch: SearchController() {
         @Authentication(AuthenticationModes.SOFT)
         override fun movieSearch(@PathVariable keyword: String?): List<Catalog> {
             return super.movieSearch(keyword)

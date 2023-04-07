@@ -91,14 +91,14 @@ open class VideoProgressController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: VideoProgressController() {
+    class OpenProgress: VideoProgressController() {
 
     }
 
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class Secure: VideoProgressController() {
+    class RestrictedProgress: VideoProgressController() {
 
         @Authentication(AuthenticationModes.SOFT)
         override fun allProgressOnGuid(@PathVariable guid: String): List<BaseProgress> {

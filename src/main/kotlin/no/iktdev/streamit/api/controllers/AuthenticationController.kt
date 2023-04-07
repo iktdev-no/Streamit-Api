@@ -19,12 +19,12 @@ open class AuthenticationController: Authy() {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open: AuthenticationController() {
+    class OpenAuthentication: AuthenticationController() {
     }
 
     @RestController
     @RequestMapping(path = ["/secure"])
-    class Secure: AuthenticationController() {
+    class RestrictedAuthentication: AuthenticationController() {
 
         @Authentication(AuthenticationModes.STRICT)
         override fun createJWT(@RequestBody user: User): Jwt {

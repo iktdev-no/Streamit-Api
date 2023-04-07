@@ -16,11 +16,11 @@ open class GeneralController {
     }
 
 
-    @GetMapping("/swagger")
+   /* @GetMapping("/swagger")
     open fun swaggerRedirect(response: HttpServletResponse) {
-        response.setHeader("Location", "/swagger-ui.html")
+        response.setHeader("Location", "/open/swagger-ui.html")
         response.status = 302
-    }
+    }*/
 
     @RestController
     @RequestMapping(path = ["/open"])
@@ -32,11 +32,11 @@ open class GeneralController {
     @RequestMapping(path = ["/secure"])
     class Secure: GeneralController() {
 
-        @GetMapping("/swagger")
+        /*@GetMapping("/swagger")
         override fun swaggerRedirect(response: HttpServletResponse) {
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
             response.sendError(response.status, "Unavailable through secure endpoint.\n Please perform this request on local net!")
-        }
+        }*/
     }
 
 
