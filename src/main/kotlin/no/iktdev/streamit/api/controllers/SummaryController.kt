@@ -27,7 +27,7 @@ open class SummaryController {
     class RestrictedSummary: SummaryController() {
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun getSummaryById(id: Int): List<Summary> {
+        override fun getSummaryById(@PathVariable id: Int): List<Summary> {
             return super.getSummaryById(id)
         }
     }

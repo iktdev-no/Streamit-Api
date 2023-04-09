@@ -122,12 +122,12 @@ open class VideoProgressController {
          **/
         @Authentication(AuthenticationModes.STRICT)
 
-        override fun uploadedProgressMovieOnGuid(guid: String, progress: Movie): ResponseEntity<String> {
+        override fun uploadedProgressMovieOnGuid(@PathVariable guid: String, @PathVariable progress: Movie): ResponseEntity<String> {
             return super.uploadedProgressMovieOnGuid(guid, progress)
         }
         @Authentication(AuthenticationModes.STRICT)
 
-        override fun uploadedProgressSerieOnGuid(guid: String, progress: Serie): ResponseEntity<String> {
+        override fun uploadedProgressSerieOnGuid(@PathVariable guid: String, @PathVariable progress: Serie): ResponseEntity<String> {
             return super.uploadedProgressSerieOnGuid(guid, progress)
         }
     }
