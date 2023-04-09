@@ -43,19 +43,17 @@ open class SubtitleController {
     class RestrictedSubtitle: SubtitleController() {
 
         @Authentication(AuthenticationModes.SOFT)
-
-        @GetMapping("/{name}")
         override fun anySubtitle(@PathVariable name: String): List<Subtitle> {
-            return anySubtitle(name)
+            return super.anySubtitle(name)
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun movieSubtitle(title: String, format: String?): List<Subtitle> {
+        override fun movieSubtitle(@PathVariable title: String, @PathVariable format: String?): List<Subtitle> {
             return super.movieSubtitle(title, format)
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun serieSubtitle(collection: String, format: String?): List<Subtitle> {
+        override fun serieSubtitle(@PathVariable collection: String, @PathVariable format: String?): List<Subtitle> {
             return super.serieSubtitle(collection, format)
         }
 
