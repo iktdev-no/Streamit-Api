@@ -57,6 +57,7 @@ data class Movie(
     var progress: Int = 0,
     var duration: Int = 0,
     var played: Int = 0,
+    var subs: List<Subtitle> = emptyList()
 ) : BaseCatalog() {
     companion object {
         fun fromRow(resultRow: ResultRow, recent: Boolean = false) = Movie(
@@ -82,7 +83,7 @@ data class Movie(
     }
 }
 
-data class Episode(override val episode: Int, val title: String?, override val video: String, var progress: Int = 0, var duration: Int = 0, var played: Int = 0) : BaseEpisode() {
+data class Episode(override val episode: Int, val title: String?, override val video: String, var progress: Int = 0, var duration: Int = 0, var played: Int = 0, var subs: List<Subtitle> = emptyList()) : BaseEpisode() {
     companion object {
         fun fromFlat(item: SerieFlat) = Episode(
             episode = item.episode,

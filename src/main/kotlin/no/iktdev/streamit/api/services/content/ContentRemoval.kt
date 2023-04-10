@@ -10,7 +10,6 @@ import no.iktdev.streamit.api.database.queries.QMovie
 import no.iktdev.streamit.api.database.queries.QSerie
 import no.iktdev.streamit.api.database.queries.QSubtitle
 import no.iktdev.streamit.api.getContext
-import no.iktdev.streamit.api.services.database.CatalogService
 import org.springframework.stereotype.Service
 import java.io.File
 
@@ -25,7 +24,7 @@ class ContentRemoval {
 
     private fun getSubtitles(collection: String, video: String): List<Pair<Any, File>> {
         val files: MutableList<Pair<Any, File>> = mutableListOf()
-        QSubtitle().selectSubtitleForVideo(video).forEach {
+        QSubtitle().selectSubtitlBasedOnTitleOrVideo(video).forEach {
             val file = File("${Configuration.content}/${collection}/sub/${it.language}/${it.subtitle}")
             if (file.exists())
                 files.add(Pair(it, file))

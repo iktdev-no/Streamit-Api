@@ -17,7 +17,7 @@ class SubtitleLogic {
      * @param format VTT,SRT,SMI,ASS
      */
     fun videoSubtitle(title: String, format: String?): List<Subtitle> {
-        return QSubtitle().selectSubtitleForVideo(title, format)
+        return QSubtitle().selectSubtitlBasedOnTitleOrVideo(title, format)
     }
 
     /**

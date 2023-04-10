@@ -3,10 +3,7 @@ package no.iktdev.streamit.api.controllers.logic
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.database.progress
-import no.iktdev.streamit.api.database.queries.QCatalog
-import no.iktdev.streamit.api.database.queries.QMovie
-import no.iktdev.streamit.api.database.queries.QProgress
-import no.iktdev.streamit.api.database.queries.QSerie
+import no.iktdev.streamit.api.database.queries.*
 import no.iktdev.streamit.api.getContext
 import no.iktdev.streamit.api.helper.progressHelper
 import no.iktdev.streamit.api.services.database.ProgressService
@@ -62,7 +59,11 @@ class VideoProgressLogic {
 
         fun getContinueMovieOnGuid(guid: String): List<Movie> {
             return QProgress().selectLastMoviesForGuid(guid).mapNotNull {
-                mapToContinueMovie(it)
+                mapToContinueMovie(it).apply {
+                    this?.video?.let {video ->
+                        this.subs = QSubtitle().selectSubtitleForVideo(video)
+                    }
+                }
             }
         }
 
@@ -77,14 +78,18 @@ class VideoProgressLogic {
 
         fun getContinueSerieOnForGuid(guid: String): List<Serie> {
             return QProgress().selectLastEpisodesForGuid(guid).mapNotNull {
-                mapToContinueSerie(it)
+                mapToContinueSerie(it).apply {
+                    this?.seasons?.flatMap { s -> s.episodes }?.map {e ->
+                        e.subs = QSubtitle().selectSubtitleForVideo(this.collection, e.video)
+                    }
+                }
             }
         }
 
         //private fun apply
 
         private fun mapToContinueSerie(table: ProgressTable): Serie? {
-            val catalog = if (table.collection != null) QSerie().selectOnCollection(table.collection) else return null
+            val catalog = QSerie().selectOnCollection(table.collection)
             return if (catalog == null || table.season == null || table.episode == null) {
                 null
             } else {
