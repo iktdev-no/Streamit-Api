@@ -80,7 +80,7 @@ class VideoProgressLogic {
             return QProgress().selectLastEpisodesForGuid(guid).mapNotNull {
                 mapToContinueSerie(it).apply {
                     this?.seasons?.flatMap { s -> s.episodes }?.map {e ->
-                        e.subs = QSubtitle().selectSubtitleForVideo(this.collection, e.video)
+                        e.subs = QSubtitle().selectSubtitleForVideo(e.video)
                     }
                 }
             }
