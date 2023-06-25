@@ -45,8 +45,8 @@ class ProgressService
                     }
 
 
-                    if (found[progress.played] > progressMovie.played) {
-                        _played = found[progress.played]
+                    if ((found[progress.played] ?: 0) > progressMovie.played) {
+                        _played = found[progress.played] ?: 0
                     }
 
                     progress.update({ progress.id eq found[progress.id] })
@@ -107,8 +107,8 @@ class ProgressService
                     }
 
                     var _played = it.played
-                    if (found[progress.played] > it.played) {
-                        _played = found[progress.played]
+                    if ((found[progress.played] ?: 0) > it.played) {
+                        _played = found[progress.played] ?: 0
                     }
 
                     progress.update({ progress.id eq found[progress.id] }) { table ->

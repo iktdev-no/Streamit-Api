@@ -30,7 +30,7 @@ data class ProgressTable(
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration =resultRow[progress.duration],
-            played = resultRow[progress.played],
+            played = resultRow[progress.played] ?: 0,
         )
     }
 }
@@ -74,7 +74,7 @@ data class ProgressMovie(
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration = resultRow[progress.duration],
-            played = resultRow[progress.played],
+            played = resultRow[progress.played] ?: 0,
             collection = resultRow[progress.collection] ?: resultRow[progress.title],
         )
     }
