@@ -1,8 +1,10 @@
 package no.iktdev.streamit.api
 
+import kotlinx.coroutines.launch
 import no.iktdev.streamit.api.database.DataSource
 import no.iktdev.streamit.api.database.cast_errors
 import no.iktdev.streamit.api.database.tables
+import no.iktdev.streamit.api.helper.Coroutines
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.Logger
@@ -20,9 +22,11 @@ fun main(args: Array<String>) {
 	val ds = DataSource().getConnection()
 	System.out.println(ds)
 
-	transaction {
-		SchemaUtils.createMissingTablesAndColumns(*tables)
-		Log(this::class.java).info("Database transaction completed")
+	Coroutines().Coroutine().launch {
+		transaction {
+			SchemaUtils.createMissingTablesAndColumns(*tables)
+			Log(this::class.java).info("Database transaction completed")
+		}
 	}
 
 	context = runApplication<StreamitApiApplication>(*args)
