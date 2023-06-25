@@ -30,7 +30,7 @@ object catalog : IntIdTable() {
     var cover: Column<String> = varchar("cover", 250)
     var type: Column<String> = varchar("type", 50)
     var collection: Column<String> = varchar("collection", 100)
-    var iid: Column<Int> = integer("iid")
+    var iid: Column<Int?> = integer("iid").nullable()
     var genres: Column<String> = varchar("genres", 24)
     val added: Column<Instant> = timestamp("added")
 }
