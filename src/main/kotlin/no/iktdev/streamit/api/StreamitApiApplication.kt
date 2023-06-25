@@ -1,6 +1,10 @@
 package no.iktdev.streamit.api
 
 import no.iktdev.streamit.api.database.DataSource
+import no.iktdev.streamit.api.database.cast_errors
+import no.iktdev.streamit.api.database.tables
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -17,6 +21,10 @@ fun main(args: Array<String>) {
 	System.out.println(ds)
 
 	context = runApplication<StreamitApiApplication>(*args)
+
+	transaction {
+		SchemaUtils.createMissingTablesAndColumns(*tables)
+	}
 }
 
 fun getContext(): ApplicationContext? {

@@ -3,10 +3,27 @@ package no.iktdev.streamit.api.database
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.CurrentDateTime
+import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.javatime.timestamp
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.LocalDateTime
+
+val tables = arrayOf(
+    catalog,
+    genre,
+    movie,
+    serie,
+    subtitle,
+    summary,
+    users,
+    progress,
+    data_audio,
+    data_video,
+    cast_errors
+)
 
 object catalog : IntIdTable() {
     val title: Column<String> = varchar("title", 250).uniqueIndex()
@@ -90,4 +107,16 @@ object data_audio: IntIdTable() {
     val sample_rate: Column<Int?> = integer("sampleRate").nullable()
     val layout: Column<String?> = varchar("layout", 8).nullable()
     val language: Column<String> = varchar("language", 6)
+}
+
+object cast_errors: IntIdTable() {
+    val file: Column<String> = varchar("source", 200)
+    val deviceModel: Column<String> = varchar("deviceModel", 50)
+    val deviceManufacturer: Column<String> = varchar("deviceManufacturer", 50)
+    val deviceBrand: Column<String> = varchar("deviceBrand", 50)
+    val deviceAndroidVersion = varchar("androidVersion", 10)
+    val appVersion = varchar("appVersion", 10)
+    val castDeviceName: Column<String> = varchar("castDeviceName", 50)
+    val error = text("error")
+    val timestamp = datetime("timestamp").clientDefault { LocalDateTime.now() }
 }
