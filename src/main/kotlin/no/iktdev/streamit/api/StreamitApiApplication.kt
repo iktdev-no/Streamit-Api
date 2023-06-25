@@ -20,11 +20,12 @@ fun main(args: Array<String>) {
 	val ds = DataSource().getConnection()
 	System.out.println(ds)
 
-	context = runApplication<StreamitApiApplication>(*args)
-
 	transaction {
 		SchemaUtils.createMissingTablesAndColumns(*tables)
+		Log(this::class.java).info("Database transaction completed")
 	}
+
+	context = runApplication<StreamitApiApplication>(*args)
 }
 
 fun getContext(): ApplicationContext? {

@@ -79,12 +79,12 @@ object progress : IntIdTable() {
     val type: Column<String> = varchar("type", 10)
     val title: Column<String> = varchar("title", 100)
     val collection: Column<String?> = varchar("collection", 250).nullable()
-    val episode: Column<Int> = integer("episode")
-    val season: Column<Int> = integer("season")
+    val episode: Column<Int?> = integer("episode").nullable()
+    val season: Column<Int?> = integer("season").nullable()
     val video: Column<String> = varchar("video", 100)
     val progress: Column<Int> = integer("progress")
     val duration: Column<Int> = integer("duration")
-    val played: Column<Int> = integer("played")
+    val played: Column<Int?> = integer("played").nullable()
 }
 
 object metadata_catalog: IntIdTable() {
