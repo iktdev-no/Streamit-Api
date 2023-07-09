@@ -1,7 +1,7 @@
 plugins {
+	kotlin("jvm") version "1.8.21"
 	id("org.springframework.boot") version "2.5.2"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.6.10"
 	kotlin("plugin.spring") version "1.5.31"
 }
 
@@ -14,6 +14,12 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
 	mavenCentral()
+	maven {
+		url = uri("https://reposilite.iktdev.no/releases")
+	}
+	maven {
+		url = uri("https://reposilite.iktdev.no/snapshots")
+	}
 }
 
 val exposedVersion = "0.38.2"
@@ -38,6 +44,9 @@ dependencies {
 	implementation ("com.google.code.gson:gson:2.9.0")
 
 	implementation ("com.auth0:java-jwt:4.0.0")
+
+	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.5")
+
 
 }
 
