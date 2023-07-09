@@ -1,10 +1,8 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.Movie
-import no.iktdev.streamit.api.database.catalog
-import no.iktdev.streamit.api.database.movie
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
+import no.iktdev.streamit.library.db.tables.catalog
+import no.iktdev.streamit.library.db.tables.movie
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.innerJoin

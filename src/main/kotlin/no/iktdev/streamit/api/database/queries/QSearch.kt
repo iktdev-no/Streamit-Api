@@ -1,9 +1,7 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.Catalog
-import no.iktdev.streamit.api.database.catalog
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
+import no.iktdev.streamit.library.db.tables.catalog
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.orWhere
 import org.jetbrains.exposed.sql.select

@@ -1,7 +1,5 @@
 package no.iktdev.streamit.api
 
-import no.iktdev.streamit.api.error.MissingConfigurationException
-import org.jetbrains.exposed.sql.Database
 import java.io.File
 
 class Configuration

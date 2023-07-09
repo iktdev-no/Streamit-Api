@@ -28,7 +28,7 @@ open class SearchController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenSearch: SearchController() {}
+    class OpenSearch: SearchController()
 
     @RestController
     @RequestMapping(path = ["/secure"])

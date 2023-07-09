@@ -1,6 +1,5 @@
 package no.iktdev.streamit.api.controllers
 
-import no.iktdev.streamit.api.classes.Response
 import no.iktdev.streamit.api.classes.User
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
@@ -44,9 +43,7 @@ open class UserController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenUser: UserController() {
-
-    }
+    class OpenUser: UserController()
 
     @RestController
     @RequestMapping(path = ["/secure"])

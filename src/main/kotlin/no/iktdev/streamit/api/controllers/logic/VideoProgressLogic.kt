@@ -1,18 +1,9 @@
 package no.iktdev.streamit.api.controllers.logic
 
-import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.*
-import no.iktdev.streamit.api.database.progress
 import no.iktdev.streamit.api.database.queries.*
-import no.iktdev.streamit.api.getContext
 import no.iktdev.streamit.api.helper.progressHelper
-import no.iktdev.streamit.api.services.database.ProgressService
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestBody
-import kotlin.math.min
+
 import kotlin.math.roundToInt
 
 class VideoProgressLogic {

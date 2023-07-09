@@ -1,7 +1,7 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.Genre
-import no.iktdev.streamit.api.database.genre
+import no.iktdev.streamit.library.db.tables.genre
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction

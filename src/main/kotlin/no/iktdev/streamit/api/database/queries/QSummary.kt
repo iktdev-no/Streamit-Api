@@ -1,8 +1,7 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.Summary
-import no.iktdev.streamit.api.database.summary
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import no.iktdev.streamit.library.db.tables.summary
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 

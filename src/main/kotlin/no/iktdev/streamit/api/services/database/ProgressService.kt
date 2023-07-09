@@ -3,8 +3,8 @@ package no.iktdev.streamit.api.services.database
 import no.iktdev.streamit.api.classes.ProgressMovie
 import no.iktdev.streamit.api.classes.ProgressSerie
 import no.iktdev.streamit.api.classes.ProgressTable
-import no.iktdev.streamit.api.database.progress
 import no.iktdev.streamit.api.helper.progressHelper
+import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service
 @Service
 class ProgressService
 {
-
-
 
     fun upsertProgressMovie(progressMovie: ProgressMovie)
     {
@@ -80,7 +78,7 @@ class ProgressService
             list.forEach {
                 val found = progress
                     .select { progress.guid eq it.guid }
-                    .andWhere { progress.collection eq (it.collection ?: "") }
+                    .andWhere { progress.collection eq it.collection }
                     .andWhere { progress.type eq it.type }
                     .andWhere { progress.episode eq (it.episode ?: -1) }
                     .andWhere { progress.season eq (it.season ?: -1) }

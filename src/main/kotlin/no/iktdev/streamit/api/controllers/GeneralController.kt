@@ -24,9 +24,7 @@ open class GeneralController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class Open : GeneralController() {
-
-    }
+    class Open : GeneralController()
 
     @RestController
     @RequestMapping(path = ["/secure"])

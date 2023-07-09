@@ -18,9 +18,7 @@ open class SummaryController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenSummary: SummaryController() {
-
-    }
+    class OpenSummary: SummaryController()
 
     @RestController
     @RequestMapping(path = ["/secure"])

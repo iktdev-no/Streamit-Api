@@ -2,14 +2,10 @@ package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.Catalog
-import no.iktdev.streamit.api.classes.Movie
-import no.iktdev.streamit.api.database.catalog
-import no.iktdev.streamit.api.database.serie
 import no.iktdev.streamit.api.helper.timeParse
+import no.iktdev.streamit.library.db.tables.catalog
+import no.iktdev.streamit.library.db.tables.serie
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDateTime

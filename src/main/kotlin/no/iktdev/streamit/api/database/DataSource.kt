@@ -1,9 +1,7 @@
 package no.iktdev.streamit.api.database
-
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.error.MissingConfigurationException
 import org.jetbrains.exposed.sql.Database
-
 class DataSource
 {
     fun getConnection(): Database {
@@ -15,9 +13,6 @@ class DataSource
         if (!Configuration.port!!.contains(":")) {
             address += ":" + Configuration.port
         }
-
-
-
         return Database.connect(
             "jdbc:mysql://$address/$database",
             //driver = "com.mysql.jdbc.Driver",
@@ -25,5 +20,4 @@ class DataSource
             password = Configuration.password
         )
     }
-
 }

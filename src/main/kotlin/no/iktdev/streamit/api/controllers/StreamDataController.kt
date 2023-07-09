@@ -3,8 +3,8 @@ package no.iktdev.streamit.api.controllers
 import no.iktdev.streamit.api.classes.AudioData
 import no.iktdev.streamit.api.classes.StreamData
 import no.iktdev.streamit.api.classes.VideoData
-import no.iktdev.streamit.api.database.data_audio
-import no.iktdev.streamit.api.database.data_video
+import no.iktdev.streamit.library.db.tables.helper.data_audio
+import no.iktdev.streamit.library.db.tables.helper.data_video
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.web.bind.annotation.GetMapping

@@ -88,7 +88,7 @@ class serieHelper
                             title = serie.title,
                             cover = serie.cover,
                             type = serie.type,
-                            collection = serie.collection ?: serie.title,
+                            collection = serie.collection,
                             season = season.season,
                             episode = episode.episode,
                             episodeTitle = if (episode is Episode) episode.title else "",

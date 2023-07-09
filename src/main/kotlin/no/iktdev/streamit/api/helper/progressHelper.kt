@@ -1,7 +1,6 @@
 package no.iktdev.streamit.api.helper
 
 import no.iktdev.streamit.api.classes.*
-import java.util.*
 
 class progressHelper
 {

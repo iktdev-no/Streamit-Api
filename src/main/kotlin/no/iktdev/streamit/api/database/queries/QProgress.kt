@@ -3,12 +3,8 @@ package no.iktdev.streamit.api.database.queries
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.Log
 import no.iktdev.streamit.api.classes.*
-import no.iktdev.streamit.api.database.movie
-import no.iktdev.streamit.api.database.progress
-import no.iktdev.streamit.api.helper.progressHelper
+import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
@@ -130,7 +126,7 @@ class QProgress {
             Log(this::class.java ).error("${movie.title}: Video is null or empty")
         }
         if (movie.played <= 0)
-            movie.played = (System.currentTimeMillis() / 1000L).toInt();
+            movie.played = (System.currentTimeMillis() / 1000L).toInt()
 
         transaction {
             val presentRecord = selectMovieRecordOnGuidAndTitle(movie.guid, movie.title)
@@ -167,7 +163,7 @@ class QProgress {
             Log(this::class.java ).error("${movie.title}: Video is null or empty")
         }
         if (movie.played <= 0)
-            movie.played = (System.currentTimeMillis() / 1000L).toInt();
+            movie.played = (System.currentTimeMillis() / 1000L).toInt()
 
         transaction {
             val presentRecord = selectMovieRecordOnGuidAndTitle(guid, movie.title)
@@ -178,7 +174,7 @@ class QProgress {
                     it[this.duration] = movie.duration
                     it[this.collection] = movie.collection
                     it[this.played] = movie.played
-                    if (movie.video?.isNotBlank() == true) {
+                    if (movie.video.isNotBlank() == true) {
                         it[this.video] = movie.video
                     }
                 }
@@ -244,7 +240,7 @@ class QProgress {
                                 table[this.duration] = entry.duration
                                 table[this.played] = entry.played
                                 table[this.video] = entry.video ?: ""
-                                table[this.collection] = entry.collection ?: ""
+                                table[this.collection] = entry.collection
                                 table[this.episode] = entry.episode ?: (-99..-1).random()
                                 table[this.season] = entry.season ?: (-99..-1).random()
                             }
@@ -288,7 +284,7 @@ class QProgress {
                                 table[this.duration] = entry.duration
                                 table[this.played] = entry.played
                                 table[this.video] = entry.video ?: ""
-                                table[this.collection] = entry.collection ?: ""
+                                table[this.collection] = entry.collection
                                 table[this.episode] = entry.episode ?: (-99..-1).random()
                                 table[this.season] = entry.season ?: (-99..-1).random()
                             }
@@ -304,7 +300,7 @@ class QProgress {
         return transaction {
             progress
                 .select { progress.guid eq it.guid }
-                .andWhere { progress.collection eq (it.collection ?: "") }
+                .andWhere { progress.collection eq it.collection }
                 .andWhere { progress.type eq it.type }
                 .andWhere { progress.episode eq (it.episode ?: -1) }
                 .andWhere { progress.season eq (it.season ?: -1) }

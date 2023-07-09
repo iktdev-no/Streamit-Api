@@ -1,6 +1,7 @@
 package no.iktdev.streamit.api.classes
 
-import no.iktdev.streamit.api.database.genre
+
+import no.iktdev.streamit.library.db.tables.genre
 import org.jetbrains.exposed.sql.ResultRow
 
 data class Genre(val id: Int, val genre: String)

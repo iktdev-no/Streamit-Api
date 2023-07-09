@@ -26,9 +26,7 @@ open class CastErrorController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenProgress: CastErrorController() {
-
-    }
+    class OpenProgress: CastErrorController()
 
     @RestController
     @RequestMapping(path = ["/secure"])
