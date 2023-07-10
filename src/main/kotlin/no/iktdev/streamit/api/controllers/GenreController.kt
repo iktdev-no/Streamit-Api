@@ -23,9 +23,7 @@ open class GenreController {
 
     @RestController("OpenGenreController")
     @RequestMapping(path = ["/open/genre"])
-    class OpenGenre: GenreController() {
-
-    }
+    class OpenGenre: GenreController()
 
 
     @RestController("RestrictedGenreController")

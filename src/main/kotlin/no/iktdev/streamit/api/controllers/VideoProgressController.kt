@@ -6,7 +6,6 @@ import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.VideoProgressLogic
 import no.iktdev.streamit.api.database.queries.QProgress
-import no.iktdev.streamit.api.services.database.ProgressService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -77,9 +76,7 @@ open class VideoProgressController {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenProgress: VideoProgressController() {
-
-    }
+    class OpenProgress: VideoProgressController()
 
 
     @RestController

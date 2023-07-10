@@ -1,7 +1,7 @@
 package no.iktdev.streamit.api.classes
 
-import no.iktdev.streamit.api.database.data_audio
-import no.iktdev.streamit.api.database.data_video
+import no.iktdev.streamit.library.db.tables.helper.data_audio
+import no.iktdev.streamit.library.db.tables.helper.data_video
 import org.jetbrains.exposed.sql.ResultRow
 
 data class StreamData(

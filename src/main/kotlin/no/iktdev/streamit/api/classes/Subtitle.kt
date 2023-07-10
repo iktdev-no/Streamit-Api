@@ -1,6 +1,6 @@
 package no.iktdev.streamit.api.classes
 
-import no.iktdev.streamit.api.database.subtitle
+import no.iktdev.streamit.library.db.tables.subtitle
 import org.jetbrains.exposed.sql.ResultRow
 
 data class Subtitle(val id: Int, val title: String, val language: String, val subtitle: String, val collection: String?, val format: String)

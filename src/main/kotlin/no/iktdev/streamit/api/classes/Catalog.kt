@@ -1,9 +1,8 @@
 package no.iktdev.streamit.api.classes
 
-import no.iktdev.streamit.api.database.catalog
-import no.iktdev.streamit.api.database.genre
-import no.iktdev.streamit.api.database.movie
-import no.iktdev.streamit.api.database.serie
+import no.iktdev.streamit.library.db.tables.catalog
+import no.iktdev.streamit.library.db.tables.movie
+import no.iktdev.streamit.library.db.tables.serie
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.stream.Collectors
 

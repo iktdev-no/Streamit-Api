@@ -1,15 +1,14 @@
 package no.iktdev.streamit.api.services.database
 
-import no.iktdev.streamit.api.classes.*
+import no.iktdev.streamit.api.classes.Catalog
 import no.iktdev.streamit.api.classes.removal.MovieRemovalResult
 import no.iktdev.streamit.api.classes.removal.SerieRemovalResult
-import no.iktdev.streamit.api.database.catalog
-import no.iktdev.streamit.api.database.movie
-import no.iktdev.streamit.api.database.serie
-import no.iktdev.streamit.api.database.subtitle
-import no.iktdev.streamit.api.helper.serieHelper
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.InsertStatement
+import no.iktdev.streamit.library.db.tables.catalog
+import no.iktdev.streamit.library.db.tables.movie
+import no.iktdev.streamit.library.db.tables.serie
+import no.iktdev.streamit.library.db.tables.subtitle
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
 import kotlin.math.absoluteValue

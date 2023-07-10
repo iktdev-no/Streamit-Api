@@ -4,10 +4,10 @@ import no.iktdev.streamit.api.classes.Catalog
 import no.iktdev.streamit.api.classes.Movie
 import no.iktdev.streamit.api.classes.Serie
 import no.iktdev.streamit.api.classes.SerieFlat
-import no.iktdev.streamit.api.database.catalog
-import no.iktdev.streamit.api.database.movie
-import no.iktdev.streamit.api.database.serie
 import no.iktdev.streamit.api.helper.serieHelper
+import no.iktdev.streamit.library.db.tables.catalog
+import no.iktdev.streamit.library.db.tables.movie
+import no.iktdev.streamit.library.db.tables.serie
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -22,21 +22,21 @@ class CatalogItemCreateOrUpdate {
 
     private fun insertCatalog(data: Catalog): InsertStatement<Number> {
         return catalog.insert {
-            it[catalog.title] = data.title
-            it[catalog.cover] = data.cover ?: ""
-            it[catalog.type] = data.type
-            it[catalog.collection] = data.collection ?: ""
-            it[catalog.genres] = data.genres ?: ""
+            it[title] = data.title
+            it[cover] = data.cover ?: ""
+            it[type] = data.type
+            it[collection] = data.collection
+            it[genres] = data.genres ?: ""
         }
     }
 
     private fun updateCatalog(data: Catalog): Int {
         return catalog.update( { catalog.title eq data.title} ) {
-            it[catalog.title] = data.title
-            it[catalog.cover] = data.cover ?: ""
-            it[catalog.type] = data.type
-            it[catalog.collection] = data.collection ?: ""
-            it[catalog.genres] = data.genres ?: ""
+            it[title] = data.title
+            it[cover] = data.cover ?: ""
+            it[type] = data.type
+            it[collection] = data.collection
+            it[genres] = data.genres ?: ""
         }
     }
 
@@ -64,22 +64,22 @@ class CatalogItemCreateOrUpdate {
 
     private fun insertSerie(item: SerieFlat): InsertStatement<Number> {
         return serie.insert {
-            it[serie.title] = item.title
-            it[serie.collection] = item.collection
-            it[serie.season] = item.season
-            it[serie.episode] = item.episode
-            it[serie.video] = item.video
+            it[title] = item.title
+            it[collection] = item.collection
+            it[season] = item.season
+            it[episode] = item.episode
+            it[video] = item.video
         }
     }
 
     private fun updateSerie(id: Int, item: SerieFlat): Int {
         return serie.update( { serie.id eq id } )
         {
-            it[serie.title] = item.title
-            it[serie.collection] = item.collection
-            it[serie.season] = item.season
-            it[serie.episode] = item.episode
-            it[serie.video] = item.video
+            it[title] = item.title
+            it[collection] = item.collection
+            it[season] = item.season
+            it[episode] = item.episode
+            it[video] = item.video
         }
     }
 
@@ -109,13 +109,13 @@ class CatalogItemCreateOrUpdate {
     private fun insertMovie(item: Movie): InsertStatement<Number>
     {
         return movie.insert {
-            it[movie.video] = item.video
+            it[video] = item.video
         }
     }
 
     private fun updateMovie(item: Movie): Int {
         return movie.update( { movie.id.eq(item.id) } ) {
-            it[movie.video] = item.video
+            it[video] = item.video
         }
     }
 

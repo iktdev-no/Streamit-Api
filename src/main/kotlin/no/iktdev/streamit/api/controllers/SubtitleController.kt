@@ -34,9 +34,7 @@ open class SubtitleController {
 
     @RestController
     @RequestMapping(path = ["/open/subtitle"])
-    class OpenSubtitle: SubtitleController() {
-
-    }
+    class OpenSubtitle: SubtitleController()
 
     @RestController
     @RequestMapping(path = ["/secure/subtitle"])

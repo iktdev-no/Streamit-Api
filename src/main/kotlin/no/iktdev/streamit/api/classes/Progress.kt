@@ -1,6 +1,6 @@
 package no.iktdev.streamit.api.classes
 
-import no.iktdev.streamit.api.database.progress
+import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.ResultRow
 
 data class ProgressTable(

@@ -1,8 +1,7 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.CastError
-import no.iktdev.streamit.api.database.cast_errors
-import org.jetbrains.exposed.sql.insert
+import no.iktdev.streamit.library.db.tables.helper.cast_errors
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 

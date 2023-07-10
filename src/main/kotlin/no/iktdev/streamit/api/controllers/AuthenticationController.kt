@@ -19,8 +19,7 @@ open class AuthenticationController: Authy() {
 
     @RestController
     @RequestMapping(path = ["/open"])
-    class OpenAuthentication: AuthenticationController() {
-    }
+    class OpenAuthentication: AuthenticationController()
 
     @RestController
     @RequestMapping(path = ["/secure"])

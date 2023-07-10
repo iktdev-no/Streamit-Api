@@ -2,7 +2,7 @@ package no.iktdev.streamit.api.controllers.logic
 
 import no.iktdev.streamit.api.classes.Subtitle
 import no.iktdev.streamit.api.database.queries.QSubtitle
-import no.iktdev.streamit.api.database.subtitle
+import no.iktdev.streamit.library.db.tables.subtitle
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction

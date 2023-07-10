@@ -1,7 +1,7 @@
 package no.iktdev.streamit.api.database.queries
 
 import no.iktdev.streamit.api.classes.Subtitle
-import no.iktdev.streamit.api.database.subtitle
+import no.iktdev.streamit.library.db.tables.subtitle
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
