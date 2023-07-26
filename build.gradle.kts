@@ -30,7 +30,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("junit:junit:4.13.1")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation(kotlin("script-runtime"))
 
 	implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -45,7 +46,10 @@ dependencies {
 
 	implementation ("com.auth0:java-jwt:4.0.0")
 
-	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.5")
+	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha13")
+	implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
+
+	testImplementation("io.mockk:mockk:1.12.0")
 
 
 }

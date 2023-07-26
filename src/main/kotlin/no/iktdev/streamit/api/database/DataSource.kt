@@ -9,7 +9,7 @@ class DataSource
             throw MissingConfigurationException("Environment is missing configuration for either Database address or Database port")
         }
         var address = Configuration.address
-        val database = no.iktdev.streamit.api.Configuration.database
+        val database = Configuration.database
         if (!Configuration.port!!.contains(":")) {
             address += ":" + Configuration.port
         }
