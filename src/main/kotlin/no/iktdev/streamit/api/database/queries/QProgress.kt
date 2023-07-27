@@ -3,9 +3,12 @@ package no.iktdev.streamit.api.database.queries
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.Log
 import no.iktdev.streamit.api.classes.*
+import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
+import java.time.ZoneId
 
 /**
  * Query Class for Progress data
@@ -42,7 +45,7 @@ class QProgress {
         return transaction {
             progress.select { progress.guid eq guid }
                 .andWhere { progress.type eq "serie" }
-                .andWhere { progress.played greater time }
+                .andWhere { progress.played greater timestampToLocalDateTime(time) }
                 .mapNotNull { ProgressTable.fromRow(it) }
         }
     }
@@ -51,7 +54,7 @@ class QProgress {
         return transaction {
             progress.select { progress.guid eq guid }
                 .andWhere { progress.type eq "movie" }
-                .andWhere { progress.played greater time }
+                .andWhere { progress.played greater timestampToLocalDateTime(time) }
                 .mapNotNull { ProgressTable.fromRow(it) }
         }
     }
@@ -80,7 +83,7 @@ class QProgress {
     fun selectLastMoviesForGuid(guid: String): List<ProgressTable> {
         return transaction {
             progress
-                .select { progress.played.isNotNull() and progress.played.greater(0) }
+                .select { progress.played.isNotNull() and progress.played.greater(timestampToLocalDateTime(0)) }
                 .andWhere { progress.guid eq guid }
                 .andWhere { progress.type eq "movie" }
                 .orderBy(progress.played, SortOrder.DESC)
@@ -135,7 +138,7 @@ class QProgress {
                 {
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
-                    it[this.played] = movie.played
+                    it[this.played] = timestampToLocalDateTime(movie.played)
                     if (movie.video?.isNotBlank() == true) {
                         it[this.video] = movie.video
                     }
@@ -147,7 +150,7 @@ class QProgress {
                     it[this.title] = movie.title.trim()
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
-                    it[this.played] = movie.played
+                    it[this.played] = timestampToLocalDateTime(movie.played)
                     if (movie.video?.isNotBlank() == true) {
                         it[this.video] = movie.video
                     }
@@ -173,7 +176,7 @@ class QProgress {
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
                     it[this.collection] = movie.collection
-                    it[this.played] = movie.played
+                    it[this.played] = timestampToLocalDateTime(movie.played)
                     if (movie.video.isNotBlank() == true) {
                         it[this.video] = movie.video
                     }
@@ -186,7 +189,7 @@ class QProgress {
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
                     it[this.collection] = movie.collection
-                    it[this.played] = movie.played
+                    it[this.played] = timestampToLocalDateTime(movie.played)
                     if (movie.video.isNotBlank()) {
                         it[this.video] = movie.video
                     }
@@ -225,7 +228,7 @@ class QProgress {
                                 table[this.video] = video
                                 table[this.progress] = entry.progress
                                 table[this.duration] = entry.duration
-                                table[this.played] = entry.played
+                                table[this.played] = timestampToLocalDateTime(entry.played)
                                 table[this.title] = title
                                 if (entry.video?.isNotBlank() == true) {
                                     table[this.video] = entry.video
@@ -238,7 +241,7 @@ class QProgress {
                                 table[this.title] = entry.title
                                 table[this.progress] = entry.progress
                                 table[this.duration] = entry.duration
-                                table[this.played] = entry.played
+                                table[this.played] = timestampToLocalDateTime(entry.played)
                                 table[this.video] = entry.video ?: ""
                                 table[this.collection] = entry.collection
                                 table[this.episode] = entry.episode ?: (-99..-1).random()
@@ -269,7 +272,7 @@ class QProgress {
                                 table[this.video] = video
                                 table[this.progress] = entry.progress
                                 table[this.duration] = entry.duration
-                                table[this.played] = entry.played
+                                table[this.played] = timestampToLocalDateTime(entry.played)
                                 table[this.title] = title
                                 if (entry.video?.isNotBlank() == true) {
                                     table[this.video] = entry.video
@@ -282,7 +285,7 @@ class QProgress {
                                 table[this.title] = entry.title
                                 table[this.progress] = entry.progress
                                 table[this.duration] = entry.duration
-                                table[this.played] = entry.played
+                                table[this.played] = timestampToLocalDateTime(entry.played)
                                 table[this.video] = entry.video ?: ""
                                 table[this.collection] = entry.collection
                                 table[this.episode] = entry.episode ?: (-99..-1).random()

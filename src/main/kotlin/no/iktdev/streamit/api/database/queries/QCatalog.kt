@@ -63,7 +63,6 @@ class QCatalog {
     }
 
     fun selectNewlyUpdatedSerieInCatalog(): List<Catalog> {
-        val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
         val recentAdded = timeParse().recentTime(Configuration.serieAgeCap)
         val dateTime = LocalDateTime.now().minusDays(Configuration.frshness)
 
@@ -87,11 +86,11 @@ class QCatalog {
                 )
                 .select { catalog.collection.isNotNull() }
                 .andWhere { catalog.type eq "serie" }
-                .andWhere { serieByEpisode[serie.added].greater(recentAdded.toString()) }
+                .andWhere { serieByEpisode[serie.added].greater(recentAdded) }
                 .orderBy(serieByEpisode[serie.added], SortOrder.DESC)
                 .mapNotNull {
                     val added = it[serieByEpisode[serie.added]]
-                    val recent = added.epochSecond > dateTime.toEpochSecond(zone)
+                    val recent = added > dateTime
                     Catalog.fromRow(it, recent)
                 }
         }

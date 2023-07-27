@@ -16,9 +16,9 @@ class QSubtitle {
 
         return transaction {
             val result = if (format.isNullOrEmpty())
-                subtitle.select { subtitle.title eq baseName }
+                subtitle.select { subtitle.associatedWithVideo eq baseName }
             else
-                subtitle.select { subtitle.title eq baseName }
+                subtitle.select { subtitle.associatedWithVideo eq baseName }
                     .andWhere { subtitle.format eq format }
             result.mapNotNull { Subtitle.fromRow(it) }
         }
@@ -29,9 +29,9 @@ class QSubtitle {
 
         return transaction {
             val result = if (format.isNullOrEmpty())
-                subtitle.select { subtitle.title eq videoBaseName }
+                subtitle.select { subtitle.associatedWithVideo eq videoBaseName }
             else
-                subtitle.select { subtitle.title eq videoBaseName }
+                subtitle.select { subtitle.associatedWithVideo eq videoBaseName }
                     .andWhere { subtitle.format eq format }
             result.mapNotNull { Subtitle.fromRow(it) }
         }
@@ -42,11 +42,11 @@ class QSubtitle {
         return transaction {
             val result = if (format.isNullOrBlank())
                 subtitle.select { subtitle.collection eq collection }
-                    .andWhere { subtitle.title eq videoBaseName }
+                    .andWhere { subtitle.associatedWithVideo eq videoBaseName }
             else
                 subtitle.select { subtitle.collection eq collection }
                     .andWhere { subtitle.format eq format }
-                    .andWhere { subtitle.title eq videoBaseName }
+                    .andWhere { subtitle.associatedWithVideo eq videoBaseName }
             result.mapNotNull { Subtitle.fromRow(it) }
         }
     }
@@ -56,11 +56,11 @@ class QSubtitle {
         return transaction {
             val result = if (format.isNullOrBlank())
                 subtitle.select { subtitle.collection eq collection }
-                    .andWhere { subtitle.title eq videoBaseName }
+                    .andWhere { subtitle.associatedWithVideo eq videoBaseName }
             else
                 subtitle.select { subtitle.collection eq collection }
                     .andWhere { subtitle.format eq format }
-                    .andWhere { subtitle.title eq videoBaseName }
+                    .andWhere { subtitle.associatedWithVideo eq videoBaseName }
             result.mapNotNull { Subtitle.fromRow(it) }
         }
     }

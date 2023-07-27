@@ -4,6 +4,9 @@ import no.iktdev.streamit.library.db.tables.catalog
 import no.iktdev.streamit.library.db.tables.movie
 import no.iktdev.streamit.library.db.tables.serie
 import org.jetbrains.exposed.sql.ResultRow
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.stream.Collectors
 
 abstract class BaseCatalog {

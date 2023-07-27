@@ -1,7 +1,10 @@
 package no.iktdev.streamit.api.classes
 
+import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.ResultRow
+import java.time.ZoneOffset
+import java.util.TimeZone
 
 data class ProgressTable(
     val id: Int,
@@ -30,7 +33,7 @@ data class ProgressTable(
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration =resultRow[progress.duration],
-            played = resultRow[progress.played] ?: 0,
+            played = resultRow[progress.played]?.toEpochSeconds()?.toInt() ?: 0,
         )
     }
 }
@@ -74,7 +77,7 @@ data class ProgressMovie(
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration = resultRow[progress.duration],
-            played = resultRow[progress.played] ?: 0,
+            played = resultRow[progress.played]?.toEpochSeconds()?.toInt() ?: 0,
             collection = resultRow[progress.collection] ?: resultRow[progress.title],
         )
     }

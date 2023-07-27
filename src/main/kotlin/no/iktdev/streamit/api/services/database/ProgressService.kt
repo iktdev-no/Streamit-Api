@@ -3,11 +3,14 @@ package no.iktdev.streamit.api.services.database
 import no.iktdev.streamit.api.classes.ProgressMovie
 import no.iktdev.streamit.api.classes.ProgressSerie
 import no.iktdev.streamit.api.classes.ProgressTable
+import no.iktdev.streamit.api.database.timestampToLocalDateTime
+import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.helper.progressHelper
 import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ProgressService
@@ -43,15 +46,15 @@ class ProgressService
                     }
 
 
-                    if ((found[progress.played] ?: 0) > progressMovie.played) {
-                        _played = found[progress.played] ?: 0
+                    if ((found[progress.played]?.toEpochSeconds() ?: 0) > progressMovie.played) {
+                        _played = (found[progress.played]?.toEpochSeconds() ?: 0).toInt()
                     }
 
                     progress.update({ progress.id eq found[progress.id] })
                     {
                         it[this.progress] = _progress
                         it[this.duration] = _duration
-                        it[this.played] = _played
+                        it[this.played] = timestampToLocalDateTime(_played)
                         it[this.video] = progressMovie.video ?: ""
                     }
                 }
@@ -63,7 +66,7 @@ class ProgressService
                         it[this.title] = progressMovie.title.trim()
                         it[this.progress] = progressMovie.progress
                         it[this.duration] = progressMovie.duration
-                        it[this.played] = progressMovie.played
+                        it[this.played] = timestampToLocalDateTime(progressMovie.played)
                         it[this.video] = progressMovie.video ?: ""
                     }
                 }
@@ -105,15 +108,15 @@ class ProgressService
                     }
 
                     var _played = it.played
-                    if ((found[progress.played] ?: 0) > it.played) {
-                        _played = found[progress.played] ?: 0
+                    if ((found[progress.played]?.toEpochSeconds() ?: 0) > it.played) {
+                        _played = (found[progress.played]?.toEpochSeconds() ?: 0).toInt()
                     }
 
                     progress.update({ progress.id eq found[progress.id] }) { table ->
                         table[this.video] = video
                         table[this.progress] = _progress
                         table[this.duration] = _duration
-                        table[this.played] = _played
+                        table[this.played] = timestampToLocalDateTime(_played)
                         table[this.title] = title
                     }
                 }
@@ -131,7 +134,7 @@ class ProgressService
                         table[this.title] = it.title
                         table[this.progress] = it.progress
                         table[this.duration] = it.duration
-                        table[this.played] = it.played
+                        table[this.played] = timestampToLocalDateTime(it.played)
                         table[this.video] = it.video ?: ""
                         table[this.collection] = it.collection
                         table[this.episode] = it.episode
