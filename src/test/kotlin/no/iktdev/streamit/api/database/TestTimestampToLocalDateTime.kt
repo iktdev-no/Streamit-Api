@@ -15,7 +15,7 @@ class TestTimestampToLocalDateTime {
     @Test
     fun `test LocalDateTime toEpochSeconds`() {
         val localDateTime = LocalDateTime.of(2021, 12, 31, 1, 0, 0)
-        val expected = 1640908800L // 2021-12-31T00:00:00Z
+        val expected = 1640905200L // 2021-12-31T00:00:00Z
         assertEquals(expected, localDateTime.toEpochSeconds())
     }
 }
