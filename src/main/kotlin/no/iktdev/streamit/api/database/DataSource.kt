@@ -31,5 +31,5 @@ fun timestampToLocalDateTime(timestamp: Int): LocalDateTime {
 }
 
 fun LocalDateTime.toEpochSeconds(): Long {
-    return this.toEpochSecond(ZoneOffset.of(ZoneOffset.systemDefault().id))
+    return this.toEpochSecond(ZoneOffset.ofTotalSeconds(ZoneOffset.systemDefault().rules.getOffset(LocalDateTime.now()).totalSeconds))
 }
