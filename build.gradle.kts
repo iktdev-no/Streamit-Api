@@ -49,7 +49,12 @@ dependencies {
 	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha13")
 	implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
 
-	testImplementation("io.mockk:mockk:1.12.0")
+	testImplementation("junit:junit:4.13.2")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
+	testImplementation("org.assertj:assertj-core:3.4.1")
+	testImplementation("org.mockito:mockito-core:3.+")
 
 
 }
