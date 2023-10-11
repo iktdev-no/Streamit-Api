@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "no.iktdev"
-version = "0.0.6.1-SNAPSHOT"
+version = "0.0.6.2-SNAPSHOT"
 base.archivesBaseName = "streamit.api"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
@@ -47,7 +47,7 @@ dependencies {
 	implementation ("com.auth0:java-jwt:4.0.0")
 
 	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha13")
-	implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
+	//implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
 
 	testImplementation("junit:junit:4.13.2")
 	testImplementation("org.junit.jupiter:junit-jupiter")
