@@ -13,9 +13,10 @@ import no.iktdev.streamit.api.database.queries.QSerie
 import no.iktdev.streamit.api.services.content.ContentRemoval
 import org.springframework.web.bind.annotation.*
 
+@RequestMapping(path = ["/catalog"])
 open class CatalogController {
 
-    @GetMapping("/catalog")
+    @GetMapping("/")
     open fun all(): List<Catalog> {
         return QCatalog().selectAll()
     }
