@@ -13,8 +13,6 @@ import no.iktdev.streamit.api.database.queries.QSerie
 import no.iktdev.streamit.api.services.content.ContentRemoval
 import org.springframework.web.bind.annotation.*
 
-@RestController
-@RequestMapping(path = ["/catalog"])
 open class CatalogController {
 
     @GetMapping("/")
@@ -54,7 +52,7 @@ open class CatalogController {
     }
 
     @RestController
-    @RequestMapping(path = ["/open"])
+    @RequestMapping(path = ["/open/catalog"])
     class OpenCatalog: CatalogController() {
 
 
@@ -112,7 +110,7 @@ open class CatalogController {
     }
 
     @RestController
-    @RequestMapping(path = ["/secure"])
+    @RequestMapping(path = ["/secure/catalog"])
     class RestrictedCatalog: CatalogController() {
 
         @Authentication(AuthenticationModes.SOFT)
