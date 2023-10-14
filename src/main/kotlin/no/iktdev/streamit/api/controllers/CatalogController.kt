@@ -15,44 +15,44 @@ import org.springframework.web.bind.annotation.*
 
 open class CatalogController {
 
-    @GetMapping("/")
+    @GetMapping("/catalog")
     open fun all(): List<Catalog> {
         return QCatalog().selectAll()
     }
 
-    @GetMapping("/new")
+    @GetMapping("/catalog/new")
     open fun getNewContent(): List<Catalog> {
         return QCatalog().selectRecentlyAdded()
     }
 
-    @GetMapping("/movie")
+    @GetMapping("/catalog/movie")
     open fun allMovies(): List<Catalog> {
         return QCatalog().selectMovieCatalog()
     }
 
-    @GetMapping("/movie/{id}")
+    @GetMapping("/catalog/movie/{id}")
     open fun movies(@PathVariable id: Int? = -1): Movie? {
         return if (id != null && id > -1) QMovie().selectOnId(id) else null
     }
 
 
-    @GetMapping("/serie")
+    @GetMapping("/catalog/serie")
     open fun allSeries(): List<Catalog> {
         return QCatalog().selectSerieCatalog()
     }
 
-    @GetMapping("/serie/{collection}")
+    @GetMapping("/catalog/serie/{collection}")
     open fun getSerie(@PathVariable collection: String? = null): Serie? {
         return if (!collection.isNullOrEmpty()) QSerie().selectOnCollection(collection) else null
     }
 
-    @GetMapping("/updated")
+    @GetMapping("/catalog/updated")
     open fun getUpdatedSeries(): List<Catalog> {
         return QCatalog().selectNewlyUpdatedSerieInCatalog()
     }
 
     @RestController
-    @RequestMapping(path = ["/open/catalog"])
+    @RequestMapping(path = ["/open"])
     class OpenCatalog: CatalogController() {
 
 
@@ -110,7 +110,7 @@ open class CatalogController {
     }
 
     @RestController
-    @RequestMapping(path = ["/secure/catalog"])
+    @RequestMapping(path = ["/secure"])
     class RestrictedCatalog: CatalogController() {
 
         @Authentication(AuthenticationModes.SOFT)
