@@ -22,7 +22,7 @@ repositories {
 	}
 }
 
-val exposedVersion = "0.38.2"
+val exposedVersion = "0.44.0"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -46,7 +46,7 @@ dependencies {
 
 	implementation ("com.auth0:java-jwt:4.0.0")
 
-	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha13")
+	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha16")
 	//implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
 
 	testImplementation("junit:junit:4.13.2")

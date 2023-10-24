@@ -44,13 +44,13 @@ open class VideoProgressController {
         return VideoProgressLogic.Get().getProgressOnGuidWithSerieTitle(guid, title)
     }
 
-    @GetMapping("/progress/{guid}/continue")
+    /*@GetMapping("/progress/{guid}/continue")
     open fun getContinue(@PathVariable guid: String): List<BaseCatalog> {
         return VideoProgressLogic.Get().getContinueOnForGuid(guid)
-    }
+    }*/
 
     @GetMapping("/progress/{guid}/continue/serie")
-    fun getContinueSerie(@PathVariable guid: String): List<Serie> {
+    open fun getContinueSerie(@PathVariable guid: String): List<Serie> {
         return VideoProgressLogic.Get().getContinueSerieOnForGuid(guid)
     }
 
@@ -110,15 +110,14 @@ open class VideoProgressController {
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun getContinue(@PathVariable guid: String): List<BaseCatalog> {
-            return super.getContinue(guid)
+        override fun getContinueSerie(@PathVariable guid: String): List<Serie> {
+            return super.getContinueSerie(guid)
         }
 
         /**
          * Post mapping below
          **/
         @Authentication(AuthenticationModes.STRICT)
-
         override fun uploadedProgressMovieOnGuid(@PathVariable guid: String, @PathVariable progress: Movie): ResponseEntity<String> {
             return super.uploadedProgressMovieOnGuid(guid, progress)
         }

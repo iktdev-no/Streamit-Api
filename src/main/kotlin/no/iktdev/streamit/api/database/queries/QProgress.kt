@@ -121,43 +121,31 @@ class QProgress {
         }
     }
 
-    @Deprecated("Now")
-    fun upsertMovie(movie: ProgressMovie) {
-        if (movie.duration == 0) {
-            Log(this::class.java ).error("${movie.title}: Duration is 0")
-        } else if (movie.video.isNullOrEmpty()) {
-            Log(this::class.java ).error("${movie.title}: Video is null or empty")
-        }
-        if (movie.played <= 0)
-            movie.played = (System.currentTimeMillis() / 1000L).toInt()
+    fun selectLastEpisodeForGuidAndTitle(guid: String, title: String): ProgressTable? {
+        return transaction {
+            val msx = progress.season.max().alias(progress.season.name)
+            val mex = progress.episode.max().alias(progress.episode.name)
 
-        transaction {
-            val presentRecord = selectMovieRecordOnGuidAndTitle(movie.guid, movie.title)
-            if (presentRecord != null) {
-                progress.update({ progress.id eq presentRecord[progress.id] })
-                {
-                    it[this.progress] = movie.progress
-                    it[this.duration] = movie.duration
-                    it[this.played] = timestampToLocalDateTime(movie.played)
-                    if (movie.video?.isNotBlank() == true) {
-                        it[this.video] = movie.video
-                    }
+            val episodeTable = progress.slice(mex, progress.title).selectAll().andWhere { progress.progress greater 0 }.groupBy(progress.title).alias("episodeTable")
+            val seasonTable = progress.slice(msx, progress.title).selectAll().andWhere { progress.progress greater 0 }.groupBy(progress.title).alias("seasonTable")
+
+            val result = progress
+                .join(episodeTable, JoinType.INNER) {
+                    progress.title eq episodeTable[progress.title] and(progress.episode eq  episodeTable[mex])
                 }
-            } else {
-                progress.insert {
-                    it[this.guid] = movie.guid
-                    it[this.type] = movie.type
-                    it[this.title] = movie.title.trim()
-                    it[this.progress] = movie.progress
-                    it[this.duration] = movie.duration
-                    it[this.played] = timestampToLocalDateTime(movie.played)
-                    if (movie.video?.isNotBlank() == true) {
-                        it[this.video] = movie.video
-                    }
+                .join(seasonTable, JoinType.INNER) {
+                    progress.title eq seasonTable[progress.title] and(progress.season eq seasonTable[msx])
                 }
-            }
+                .select { progress.played.isNotNull() }
+                .andWhere { progress.guid eq guid }
+                .andWhere { progress.type eq "serie" }
+                .andWhere { progress.title eq title }
+                .orderBy(progress.played, SortOrder.DESC)
+                .firstOrNull()
+            result?.let { ProgressTable.fromRow(it) }
         }
     }
+
 
     fun upsertMovieOnGuid(guid: String, movie: Movie) {
         if (movie.duration == 0) {
@@ -196,6 +184,7 @@ class QProgress {
                 }
             }
         }
+        QResumeOrNext(guid).setResume(movie)
     }
 
 
@@ -209,50 +198,6 @@ class QProgress {
         }
     }
 
-    @Deprecated("Now")
-    fun upsertSerie(serie: ProgressSerie) {
-        /*if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
-        }*/
-        val mapped = serieToProgressTable(serie)
-        mapped.forEach { entry ->
-            if (entry.duration == 0 && entry.progress == 0) {
-                Log(this::class.java).error("Skipping: $entry")
-            } else {
-                val record = selectSerieRecordOnGuidAndCombinationValues(entry)
-                if (entry.progress == 0 && (record?.get(progress.progress) ?: 0) != 0) {
-                    Log(this::class.java).error("Skipping: $entry as it looks like progress is lost")
-                } else {
-                    transaction {
-                        if (record != null) {
-                            progress.update({ progress.id eq record[progress.id] }) { table ->
-                                table[this.video] = video
-                                table[this.progress] = entry.progress
-                                table[this.duration] = entry.duration
-                                table[this.played] = timestampToLocalDateTime(entry.played)
-                                table[this.title] = title
-                                if (entry.video?.isNotBlank() == true) {
-                                    table[this.video] = entry.video
-                                }
-                            }
-                        } else {
-                            progress.insert { table ->
-                                table[this.guid] = entry.guid
-                                table[this.type] = entry.type
-                                table[this.title] = entry.title
-                                table[this.progress] = entry.progress
-                                table[this.duration] = entry.duration
-                                table[this.played] = timestampToLocalDateTime(entry.played)
-                                table[this.video] = entry.video ?: ""
-                                table[this.collection] = entry.collection
-                                table[this.episode] = entry.episode ?: (-99..-1).random()
-                                table[this.season] = entry.season ?: (-99..-1).random()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     fun upsertSerieOnGuid(guid: String, serie: Serie) {
         /*if (serie.seasons.flatMap { it.episodes }.any {  it.duration <= 0 }) {
@@ -296,6 +241,7 @@ class QProgress {
                 }
             }
         }
+        QResumeOrNext(guid).setResume(serie)
     }
 
 

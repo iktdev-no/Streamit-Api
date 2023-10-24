@@ -6,6 +6,9 @@ import no.iktdev.streamit.api.helper.timeParse
 import no.iktdev.streamit.library.db.tables.catalog
 import no.iktdev.streamit.library.db.tables.serie
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDateTime
@@ -27,6 +30,13 @@ class QCatalog {
                 .mapNotNull {
                     Catalog.fromRow(it)
                 }
+        }
+    }
+
+    fun selectCatalogWhereGenreIsNotNull(): List<Catalog> {
+        return transaction {
+            catalog.select { catalog.genres.isNotNull() }
+                .mapNotNull { Catalog.fromRow(it) }
         }
     }
 
@@ -98,7 +108,7 @@ class QCatalog {
 
     fun deleteCatalogItemOn(id: Int): Boolean {
         return transaction {
-            val rows = catalog.deleteWhere { catalog.id eq id }
+            val rows = catalog.deleteWhere { catalog.id.eq(id) }
             if (rows > 1) {
                 rollback()
                 false

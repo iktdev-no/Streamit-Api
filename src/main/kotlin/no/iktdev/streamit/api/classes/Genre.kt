@@ -14,3 +14,5 @@ data class Genre(val id: Int, val genre: String)
         )
     }
 }
+
+data class GenreCatalog(val genere: Genre, val catalog: MutableList<Catalog> = mutableListOf())

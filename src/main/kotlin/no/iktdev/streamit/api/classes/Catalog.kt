@@ -183,6 +183,18 @@ data class Serie(
         )
     }
 
+    fun after(currentSeason: Int, currentEpisode: Int): Pair<Int, Episode>? {
+        val viableSeasons = seasons.filter { sit -> sit.season >= currentSeason }
+        val viablePair = viableSeasons.firstNotNullOfOrNull { sit ->
+            val episodes = if (sit.season == currentSeason) {
+                sit.episodes.filter { it.episode > currentEpisode }
+            } else sit.episodes
+            if (episodes.isNotEmpty())
+                sit.season to episodes.first()
+            else null
+        }
+        return viablePair?.let { it.first to it.second }
+    }
 }
 
 data class SerieFlat(

@@ -1,11 +1,9 @@
 package no.iktdev.streamit.api.controllers
 
-import no.iktdev.streamit.api.classes.Catalog
-import no.iktdev.streamit.api.classes.Movie
-import no.iktdev.streamit.api.classes.Response
-import no.iktdev.streamit.api.classes.Serie
+import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
+import no.iktdev.streamit.api.controllers.logic.GenredCatalogLogic
 import no.iktdev.streamit.api.database.operations.CatalogItemCreateOrUpdate
 import no.iktdev.streamit.api.database.queries.QCatalog
 import no.iktdev.streamit.api.database.queries.QMovie
@@ -49,6 +47,11 @@ open class CatalogController {
     @GetMapping("/catalog/updated")
     open fun getUpdatedSeries(): List<Catalog> {
         return QCatalog().selectNewlyUpdatedSerieInCatalog()
+    }
+
+    @GetMapping("/catalog/genred")
+    open fun getGenredCatalogs(): List<GenreCatalog> {
+        return GenredCatalogLogic().getGenreToCatalog()
     }
 
     @RestController
@@ -116,6 +119,11 @@ open class CatalogController {
         @Authentication(AuthenticationModes.SOFT)
         override fun all(): List<Catalog> {
             return super.all()
+        }
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun getGenredCatalogs(): List<GenreCatalog> {
+            return super.getGenredCatalogs()
         }
 
         @Authentication(AuthenticationModes.SOFT)

@@ -7,6 +7,7 @@ import no.iktdev.streamit.library.db.tables.catalog
 import no.iktdev.streamit.library.db.tables.movie
 import no.iktdev.streamit.library.db.tables.serie
 import no.iktdev.streamit.library.db.tables.subtitle
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -63,7 +64,7 @@ class CatalogService
 
             val deletion = transaction {
                try {
-                   val subtitleDeletion = subtitle.deleteWhere { subtitle.associatedWithVideo eq catalogItem.title }
+                   val subtitleDeletion = subtitle.deleteWhere { this.associatedWithVideo eq catalogItem.title }
                    val catalogDeleted = catalog.deleteWhere { catalog.iid eq iid }
                    val movieDeleted = movie.deleteWhere { movie.id eq iid }
 
@@ -136,7 +137,7 @@ class CatalogService
                     val catalogDeletion = if (episodeCount == 0L) {
                         catalog.deleteWhere { catalog.collection eq collection }
                     } else 0
-                    val subtitleDeletion = subtitle.deleteWhere { subtitle.associatedWithVideo eq baseFileName }
+                    val subtitleDeletion = subtitle.deleteWhere { this.associatedWithVideo eq baseFileName }
 
                     if (episodeDeletion == 0) {
                         rollback()
