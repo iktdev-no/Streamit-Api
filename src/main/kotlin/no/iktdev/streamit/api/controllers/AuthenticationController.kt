@@ -4,10 +4,9 @@ import no.iktdev.streamit.api.classes.Jwt
 import no.iktdev.streamit.api.classes.User
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
-import no.iktdev.streamit.api.controllers.logic.UserLogic
+import no.iktdev.streamit.api.database.queries.QUser
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.util.*
 import javax.servlet.http.HttpServletResponse
 
 open class AuthenticationController: Authy() {
@@ -46,7 +45,7 @@ open class AuthenticationController: Authy() {
                 return null
             }
 
-            val user = UserLogic.Get().getUserByGuid(payloadUser.guid)
+            val user = QUser().selectWidth(payloadUser.guid)
             if (user == null) {
                 response.sendError(HttpStatus.BAD_REQUEST.value(), "Unable to find user found in JWT in system")
                 return null

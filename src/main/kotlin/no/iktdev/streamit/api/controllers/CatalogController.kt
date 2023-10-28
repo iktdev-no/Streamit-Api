@@ -4,11 +4,10 @@ import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.controllers.logic.GenredCatalogLogic
-import no.iktdev.streamit.api.database.operations.CatalogItemCreateOrUpdate
 import no.iktdev.streamit.api.database.queries.QCatalog
 import no.iktdev.streamit.api.database.queries.QMovie
+import no.iktdev.streamit.api.database.queries.QResumeOrNext
 import no.iktdev.streamit.api.database.queries.QSerie
-import no.iktdev.streamit.api.services.content.ContentRemoval
 import org.springframework.web.bind.annotation.*
 
 open class CatalogController {
@@ -54,62 +53,15 @@ open class CatalogController {
         return GenredCatalogLogic().getGenreToCatalog()
     }
 
+    @GetMapping("/catalog/{userId}/continue/serie")
+    open fun getContinueOrResumeSerie(@PathVariable userId: String): List<Serie> {
+        return QResumeOrNext(userId).getResumeOrNextOnSerie()
+    }
+
+
     @RestController
     @RequestMapping(path = ["/open"])
     class OpenCatalog: CatalogController() {
-
-
-        /**
-         *
-         * Post Mappings below
-         *
-         **/
-
-
-        @PostMapping("/serie")
-        fun serie(serie: Serie) {
-            CatalogItemCreateOrUpdate().Serie(serie)
-        }
-
-        @PostMapping("/movie")
-        fun movie(movie: Movie) {
-            CatalogItemCreateOrUpdate().Movie(movie)
-        }
-
-
-        /**
-         * Delete Mappings below
-         **/
-
-        @DeleteMapping("/movie/title")
-        fun deleteMovieByTitle(@RequestParam("title") title: String): Response {
-            val movie = QMovie().selectOnTitle(title) ?: return Response(false, "Could not find item on title")
-            ContentRemoval.getService()?.removeMovie(movie) ?: return Response(false, "Could not delete item on title")
-            return Response(true)
-        }
-        @DeleteMapping("/movie/id")
-        fun deleteMovieById(@RequestParam("id") id: Int): Response {
-            val movie = QMovie().selectOnId(id) ?: return Response(false, "Could not find item on title")
-            ContentRemoval.getService()?.removeMovie(movie) ?: return Response(false, "Could not delete item on title")
-            return Response(true)
-        }
-
-        @DeleteMapping("/serie/title")
-        fun deleteSerieByTitle(@RequestParam("title") title: String): Response {
-            return deleteSerieByCollection(title)
-        }
-        @DeleteMapping("/serie/collection")
-        fun deleteSerieByCollection(@RequestParam("collection") collection: String): Response {
-            val serie = QSerie().selectOnCollection(collection) ?: return Response(false, "Could not find item on title")
-            ContentRemoval.getService()?.removeSerie(serie) ?: return Response(false, "Could not delete item on title")
-            return Response(true)
-        }
-        @DeleteMapping("/serie/id")
-        fun deleteSerieById(@RequestParam("id")  id: Int): Response {
-            val serie = QSerie().selectOnId(id) ?: return Response(false, "Could not find item on title")
-            ContentRemoval.getService()?.removeSerie(serie) ?: return Response(false, "Could not delete item on title")
-            return Response(true)
-        }
     }
 
     @RestController

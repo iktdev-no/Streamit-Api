@@ -1,17 +1,14 @@
 package no.iktdev.streamit.api.database.queries
 
 import kotlinx.coroutines.launch
-import no.iktdev.streamit.api.classes.Movie
-import no.iktdev.streamit.api.classes.Serie
+import no.iktdev.streamit.api.Configuration
+import no.iktdev.streamit.api.classes.*
+import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.helper.Coroutines
 import no.iktdev.streamit.library.db.query.ResumeOrNextQuery
-import no.iktdev.streamit.library.db.tables.executeWithStatus
-import no.iktdev.streamit.library.db.tables.resumeOrNext
-import no.iktdev.streamit.library.db.tables.users
+import no.iktdev.streamit.library.db.tables.*
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.update
 import kotlin.math.roundToInt
 
 class QResumeOrNext(val userId: String) {
@@ -94,22 +91,50 @@ class QResumeOrNext(val userId: String) {
                     video = nextEpisode.video
                 ).insertAndGetStatus()
             }
-
-            // Instead of delete, do a query and insert next episode, if last then delete
-           /* executeWithStatus {
-                resumeOrNext.deleteWhere {
-                    (resumeOrNext.collection eq serie.collection) and
-                            (resumeOrNext.type eq serie.type) and
-                            (resumeOrNext.userId eq userId)
-                }
-            }*/
-
         }
     }
 
-    fun getResumeSerie(userId: String, title: String) {
-        //val last = QProgress().selectLastEpisodesForGuid(userId)
+    fun getResumeOrNextOnSerie(): List<Serie> {
+        val joined = withTransaction {
+            resumeOrNext
+                .join(progress, JoinType.INNER) {
+                    progress.episode.eq(resumeOrNext.episode)
+                        .and(progress.season.eq(resumeOrNext.season))
+                        .and(progress.collection.eq(resumeOrNext.collection))
+                        .and(progress.guid.eq(userId))
+                }
+                .join(serie, JoinType.INNER) {
+                    serie.collection.eq(resumeOrNext.collection)
+                        .and(serie.episode.eq(resumeOrNext.episode))
+                        .and(serie.season.eq(resumeOrNext.season))
+                }
+                .select { resumeOrNext.ignore.neq(true) }
+                .andWhere { resumeOrNext.userId.eq(userId) }
+                .andWhere { resumeOrNext.type.eq("serie") }
+                .orderBy(resumeOrNext.updated, SortOrder.DESC)
+                .limit(Configuration.continueWatch)
+                .filterNotNull()
+        }?.groupBy { it[catalog.collection] } ?: emptyMap()
+        return joined.mapNotNull { mapToSerie(it.key, it.value) }
+    }
 
+    private fun mapToSerie(collection: String, rows: List<ResultRow>): Serie? {
+        val base = Serie.basedOn(rows.first())
+        val seasonToEpisode = rows.groupBy { it[serie.season] }.map {
+                seasonGroup ->
+            val episodes = seasonGroup.value.map {
+                Episode(
+                    episode = it[serie.episode],
+                    title = it[serie.title],
+                    video = it[serie.video],
+                    progress = it[progress.progress],
+                    duration = it[progress.duration],
+                    played = it[progress.played]?.toEpochSeconds()?.toInt() ?: 0
+                )
+            }
+            Season<Episode>(season = seasonGroup.key, episodes.toMutableList())
+        }
+        return base.apply { seasons = seasonToEpisode }
     }
 
 }

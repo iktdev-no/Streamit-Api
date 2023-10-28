@@ -39,10 +39,10 @@ class QUser {
         }
     }
 
-    fun deleteWith(id: String) {
-        transaction {
-            users.deleteWhere { users.guid eq id }
-        }
+    fun deleteWith(id: String): Boolean {
+        return transaction {
+            users.deleteWhere { guid eq id }
+        } != 0
     }
 
 

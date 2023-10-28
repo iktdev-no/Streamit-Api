@@ -7,8 +7,6 @@ import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.Instant
-import java.time.ZoneId
 
 /**
  * Query Class for Progress data
