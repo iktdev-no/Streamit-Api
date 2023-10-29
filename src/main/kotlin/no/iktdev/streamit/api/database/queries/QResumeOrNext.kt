@@ -32,7 +32,7 @@ class QResumeOrNext(val userId: String) {
                 type = movie.type,
                 collection = movie.collection,
                 video = movie.video
-            ).insertAndGetStatus()
+            ).upsertAndGetStatus()
         } else {
             executeWithStatus {
                 resumeOrNext.deleteWhere {
@@ -75,7 +75,7 @@ class QResumeOrNext(val userId: String) {
                 episode = latestEpisode.episode,
                 season = latestSeason.season,
                 video = latestEpisode.video
-            ).insertAndGetStatus()
+            ).upsertAndGetStatus()
         } else {
             Coroutines().CoroutineIO().launch {
                 val pulledSerie = QSerie().selectOnCollection(serie.collection) ?: return@launch
@@ -89,7 +89,7 @@ class QResumeOrNext(val userId: String) {
                     season = nextSeason,
                     episode = nextEpisode.episode,
                     video = nextEpisode.video
-                ).insertAndGetStatus()
+                ).upsertAndGetStatus()
             }
         }
     }
