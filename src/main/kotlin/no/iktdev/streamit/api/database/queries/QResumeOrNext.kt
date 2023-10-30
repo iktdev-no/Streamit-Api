@@ -114,7 +114,7 @@ class QResumeOrNext(val userId: String) {
                 .orderBy(resumeOrNext.updated, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .filterNotNull()
-        }?.groupBy { it[catalog.collection] } ?: emptyMap()
+        }?.groupBy { it[serie.collection] } ?: emptyMap()
         return joined.mapNotNull { mapToSerie(it.key, it.value) }
     }
 
