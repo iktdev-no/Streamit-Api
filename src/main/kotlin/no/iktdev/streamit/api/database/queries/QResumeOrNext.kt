@@ -108,6 +108,10 @@ class QResumeOrNext(val userId: String) {
                         .and(serie.episode.eq(resumeOrNext.episode))
                         .and(serie.season.eq(resumeOrNext.season))
                 }
+                .join(catalog, JoinType.INNER) {
+                    catalog.collection.eq(resumeOrNext.collection)
+                        .and(catalog.type.eq(resumeOrNext.type))
+                }
                 .select { resumeOrNext.ignore.neq(true) }
                 .andWhere { resumeOrNext.userId.eq(userId) }
                 .andWhere { resumeOrNext.type.eq("serie") }
