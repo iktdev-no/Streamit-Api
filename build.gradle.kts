@@ -46,7 +46,7 @@ dependencies {
 
 	implementation ("com.auth0:java-jwt:4.0.0")
 
-	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha19")
+	implementation("no.iktdev.streamit.library:streamit-library-db:0.0.6-alpha20")
 	//implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
 
 	testImplementation("junit:junit:4.13.2")

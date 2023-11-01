@@ -16,6 +16,7 @@ class QCastError {
                 it[deviceBrand] = castError.deviceBrand
                 it[deviceModel] = castError.deviceModel
                 it[deviceManufacturer] = castError.deviceManufacturer
+                it[error] = castError.error
             }.value
         }
     }
