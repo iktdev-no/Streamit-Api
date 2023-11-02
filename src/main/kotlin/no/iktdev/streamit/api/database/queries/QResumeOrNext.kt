@@ -3,6 +3,7 @@ package no.iktdev.streamit.api.database.queries
 import kotlinx.coroutines.launch
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.*
+import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.helper.Coroutines
 import no.iktdev.streamit.library.db.query.ResumeOrNextQuery
@@ -31,7 +32,8 @@ class QResumeOrNext(val userId: String) {
                 userId = userId,
                 type = movie.type,
                 collection = movie.collection,
-                video = movie.video
+                video = movie.video,
+                updated = timestampToLocalDateTime(movie.played)
             ).upsertAndGetStatus()
         } else {
             executeWithStatus {
@@ -74,7 +76,8 @@ class QResumeOrNext(val userId: String) {
                 collection = serie.collection,
                 episode = latestEpisode.episode,
                 season = latestSeason.season,
-                video = latestEpisode.video
+                video = latestEpisode.video,
+                updated = timestampToLocalDateTime(latestEpisode.played)
             ).upsertAndGetStatus()
         } else {
             Coroutines().CoroutineIO().launch {
