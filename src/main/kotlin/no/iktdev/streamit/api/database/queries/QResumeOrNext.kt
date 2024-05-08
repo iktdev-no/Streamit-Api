@@ -6,8 +6,10 @@ import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.helper.Coroutines
+import no.iktdev.streamit.library.db.executeWithStatus
 import no.iktdev.streamit.library.db.query.ResumeOrNextQuery
 import no.iktdev.streamit.library.db.tables.*
+import no.iktdev.streamit.library.db.withTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import kotlin.math.roundToInt
@@ -27,7 +29,7 @@ class QResumeOrNext(val userId: String) {
         if (movie.duration < OneMinute) {
             return
         }
-        if (isResumable(movie.progress, movie.duration)) {
+        if (isResumable(movie.progress, movie.duration) && movie.played > 0) {
             ResumeOrNextQuery(
                 userId = userId,
                 type = movie.type,
