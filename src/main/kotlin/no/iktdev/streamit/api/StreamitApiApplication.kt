@@ -1,6 +1,10 @@
 package no.iktdev.streamit.api
 
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import no.iktdev.streamit.api.helper.Coroutines
 import no.iktdev.streamit.library.db.datasource.MySqlDataSource
 import no.iktdev.streamit.library.db.tables.*
@@ -14,13 +18,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.ApplicationContext
+import java.io.File
+import java.io.FileInputStream
 
 @SpringBootApplication
 class StreamitApiApplication
 
 private var context: ApplicationContext? = null
+val log = KotlinLogging.logger {}
 
 fun main(args: Array<String>) {
+
 	val ds = MySqlDataSource.fromDatabaseEnv().createDatabase()
 	System.out.println(ds)
 
@@ -41,23 +49,13 @@ fun main(args: Array<String>) {
 		)
 		transaction {
 			SchemaUtils.createMissingTablesAndColumns(*tables)
-			Log(this::class.java).info("Database transaction completed")
+			log.info("Database transaction completed")
 		}
 	}
-
 	context = runApplication<StreamitApiApplication>(*args)
 }
 
+
 fun getContext(): ApplicationContext? {
 	return context
-}
-
-fun Log(c: Class<*>, message: String) {
-	val caller: String = c::class.java.simpleName
-	LoggerFactory.getLogger(caller).info(message)
-}
-
-fun Log(c: Class<*>): Logger {
-	val caller: String = c::class.java.simpleName
-	return LoggerFactory.getLogger(caller)
 }

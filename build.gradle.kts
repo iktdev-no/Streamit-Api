@@ -45,6 +45,9 @@ dependencies {
 	implementation ("com.google.code.gson:gson:2.9.0")
 
 	implementation ("com.auth0:java-jwt:4.0.0")
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+
+	implementation("com.google.firebase:firebase-admin:9.2.0")
 
 	implementation("no.iktdev.streamit.library:streamit-library-db:1.0.0-alpha2")
 	//implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")

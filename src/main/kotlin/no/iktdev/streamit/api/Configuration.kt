@@ -19,6 +19,8 @@ class Configuration
         var continueWatch: Int = System.getenv("CONTENT_CONTINUE")?.toInt() ?: 10
         var jwtSecret: String? = System.getenv("JWT_SECRET") ?: "eO5zESo8livHiDWxwn+J5U7h5cAZPgWZr4JymG94zB0="
         var jwtExpiry: String? = System.getenv("JWT_EXPIRY") ?: null
+
+        var firebaseServiceFile: String? = System.getenv("FCM_FILE") ?: null
     }
 
 
