@@ -1,12 +1,14 @@
 package no.iktdev.streamit.api.database.queries
 
+import mu.KotlinLogging
 import no.iktdev.streamit.api.Configuration
-import no.iktdev.streamit.api.Log
 import no.iktdev.streamit.api.classes.*
 import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.library.db.tables.progress
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+
+val log = KotlinLogging.logger {}
 
 /**
  * Query Class for Progress data
@@ -147,9 +149,9 @@ class QProgress {
 
     fun upsertMovieOnGuid(guid: String, movie: Movie) {
         if (movie.duration == 0) {
-            Log(this::class.java ).error("${movie.title}: Duration is 0")
+            log.error("${movie.title}: Duration is 0")
         } else if (movie.video.isEmpty()) {
-            Log(this::class.java ).error("${movie.title}: Video is null or empty")
+            log.error("${movie.title}: Video is null or empty")
         }
         if (movie.played <= 0)
             movie.played = (System.currentTimeMillis() / 1000L).toInt()
@@ -203,11 +205,11 @@ class QProgress {
         val mapped = serieToProgressTableWithGuid(guid, serie)
         mapped.forEach { entry ->
             if (entry.duration == 0 && entry.progress == 0) {
-                Log(this::class.java).error("Skipping: $entry")
+                log.error("Skipping: $entry")
             } else {
                 val record = selectSerieRecordOnGuidAndCombinationValues(entry)
                 if (entry.progress == 0 && (record?.get(progress.progress) ?: 0) != 0) {
-                    Log(this::class.java).error("Skipping: $entry as it looks like progress is lost")
+                    log.error("Skipping: $entry as it looks like progress is lost")
                 } else {
                     transaction {
                         if (record != null) {
