@@ -17,12 +17,12 @@ class RemoteDeviceNotificationService {
         val fcmFile = Configuration.firebaseServiceFile?.let {
             File(it)
         }
-        if (fcmFile?.exists() == false) {
+        if (fcmFile == null || !fcmFile.exists()) {
             log.info { "No firebase service file found." }
             log.info { "FCM provided notifications will not be available, and remote configuration and sharing will be unavailable." }
         } else {
             try {
-                FileInputStream(fcmFile!!.absolutePath).use { fis ->
+                FileInputStream(fcmFile.absolutePath).use { fis ->
                     val options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(fis))
                         .build()
