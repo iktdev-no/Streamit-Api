@@ -3,6 +3,7 @@ package no.iktdev.streamit.api.controllers
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.gson.Gson
+import mu.KotlinLogging
 import no.iktdev.streamit.api.classes.fcm.FCMBase
 import no.iktdev.streamit.api.classes.fcm.FCMRemoteServerSetup
 import no.iktdev.streamit.api.classes.fcm.FCMRemoteUserSetup
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-
+val log = KotlinLogging.logger {}
 open class DeviceNotificationController(@Autowired var service: RemoteDeviceNotificationService? = null) {
 
     open fun notifyDeviceOfIncomingMessages(@RequestBody data: FCMBase) {
@@ -32,6 +33,7 @@ open class DeviceNotificationController(@Autowired var service: RemoteDeviceNoti
 
         service?.firebaseApp?.let { app ->
             FirebaseMessaging.getInstance(app).send(message)
+            log.info { "Sending requested payload on 'configure-server' to FCM for ${data.fcmReceiverId}" }
         }
     }
 
@@ -45,6 +47,7 @@ open class DeviceNotificationController(@Autowired var service: RemoteDeviceNoti
 
         service?.firebaseApp?.let { app ->
             FirebaseMessaging.getInstance(app).send(message)
+            log.info { "Sending requested payload to 'configure-user' on FCM for ${data.fcmReceiverId}" }
         }
     }
 
