@@ -27,10 +27,18 @@ class RemoteDeviceNotificationService {
                         .setCredentials(GoogleCredentials.fromStream(fis))
                         .build()
                     firebaseApp = FirebaseApp.initializeApp(options)
+                    if (firebaseApp != null) {
+                        firebaseApp?.let {
+                            log.info { "Created and configured FCM instance ${it.name}" }
+                        }
+                    } else {
+                        log.error { "Failed to configure FCM Instance" }
+                    }
                     SupportedFeatures.supportsRemoteDeviceConfiguration = true
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                log.error { "Failed to configure FCM Instance" }
             }
         }
     }
