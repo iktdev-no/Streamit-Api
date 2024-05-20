@@ -45,7 +45,9 @@ fun main(args: Array<String>) {
 			data_audio,
 			data_video,
 			cast_errors,
-			resumeOrNext
+			resumeOrNext,
+			registeredDevices,
+			delegatedAuthenticationTable
 		)
 		transaction {
 			SchemaUtils.createMissingTablesAndColumns(*tables)

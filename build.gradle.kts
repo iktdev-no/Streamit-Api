@@ -49,7 +49,7 @@ dependencies {
 
 	implementation("com.google.firebase:firebase-admin:9.2.0")
 
-	implementation("no.iktdev.streamit.library:streamit-library-db:1.0.0-alpha2")
+	implementation("no.iktdev.streamit.library:streamit-library-db:1.0.0-alpha4")
 	//implementation("no.iktdev.streamit.library:streamit-library-kafka:0.0.2-alpha75")
 
 	testImplementation("junit:junit:4.13.2")
