@@ -88,7 +88,7 @@ data class ProgressSerie(
     override val type: String,
     override val title: String,
     override val collection: String,
-    var seasons: List<ProgressSeason>
+    var episodes: List<ProgressEpisode> = emptyList(),
 ): BaseProgress()
 {
     companion object
@@ -98,13 +98,10 @@ data class ProgressSerie(
             title = item.title,
             type = item.type,
             collection = item.collection,
-            seasons = listOf()
+            episodes = listOf()
         )
     }
 }
-
-data class ProgressSeason(val season: Int, var episodes: List<ProgressEpisode>)
-
 
 data class ProgressEpisode(
     val episode: Int,

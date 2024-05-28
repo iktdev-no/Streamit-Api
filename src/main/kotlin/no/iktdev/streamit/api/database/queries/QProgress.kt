@@ -275,24 +275,4 @@ class QProgress {
         }
     }
 
-    @Deprecated("Now")
-    private fun serieToProgressTable(serie: ProgressSerie): List<ProgressTable> {
-        return serie.seasons.flatMap { season -> season.episodes.map {
-            ProgressTable(
-                id = -1,
-                guid = serie.guid,
-                type = "serie",
-                title = serie.title,
-                collection = serie.collection,
-                video = it.video,
-                season = season.season,
-                episode = it.episode,
-                progress = it.progress,
-                duration = it.duration,
-                played = it.played
-            )
-        }}
-    }
-
-
 }
