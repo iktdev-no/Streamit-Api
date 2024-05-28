@@ -72,7 +72,7 @@ class QResumeOrNext(val userId: String) {
         if (isResumable(latestEpisode.progress, latestEpisode.duration)) {
             ResumeOrNextQuery(
                 userId = userId,
-                type = serie.type,
+                type = serie.type.sqlName(),
                 collection = serie.collection,
                 episode = latestEpisode.episode,
                 season = latestEpisode.season,
@@ -85,7 +85,7 @@ class QResumeOrNext(val userId: String) {
                 val next = pulledSerie.after(latestEpisode.season, latestEpisode.episode) ?: return@launch
                 ResumeOrNextQuery(
                     userId = userId,
-                    type = serie.type,
+                    type = serie.type.sqlName(),
                     collection = serie.collection,
                     season = next.episode,
                     episode = next.episode,
