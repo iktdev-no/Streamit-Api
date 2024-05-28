@@ -59,7 +59,7 @@ class ContentRemoval {
 
     fun removeSerie(serie: Serie) {
         val files: MutableList<Pair<Any, File>> = mutableListOf()
-        serie.seasons.flatMap { it.episodes }.forEach {
+        serie.episodes.forEach {
             val file = File("${Configuration.content}/${serie.collection}/${it.video}")
             if (file.exists()) {
                 val subs = getSubtitles(serie.collection, it.video)

@@ -44,40 +44,15 @@ class VideoProgressLogic {
             return result.map { ProgressMovie.fromProgressTable(it) }
         }
 
-        fun getContinueOnForGuid(guid: String): List<BaseCatalog> {
-            return getContinueMovieOnGuid(guid) + getContinueSerieOnForGuid(guid)
-        }
-
-        fun getContinueMovieOnGuid(guid: String): List<Movie> {
-            return QProgress().selectLastMoviesForGuid(guid).mapNotNull {
-                mapToContinueMovie(it).apply {
-                    this?.video?.let {video ->
-                        this.subs = QSubtitle().selectSubtitleForVideo(video)
-                    }
-                }
-            }
-        }
-
-        private fun mapToContinueMovie(table: ProgressTable): Movie? {
-            val movieItem = QMovie().selectOnTitle(table.title)
-            return movieItem?.apply {
-                progress = table.progress
-                duration = table.duration
-                played = table.played
-            }
-        }
 
         fun getContinueSerieOnForGuid(guid: String): List<Serie> {
             return QProgress().selectLastEpisodesForGuid(guid).mapNotNull {
                 mapToContinueSerie(it).apply {
-                    this?.seasons?.flatMap { s -> s.episodes }?.map {e ->
-                        e.subs = QSubtitle().selectSubtitleForVideo(e.video)
-                    }
+                    this?.episodes?.map { e -> e.subs = QSubtitle().selectSubtitleForVideo(e.video) }
                 }
             }
         }
 
-        //private fun apply
 
         private fun mapToContinueSerie(table: ProgressTable): Serie? {
             val catalog = QSerie().selectOnCollection(table.collection)
@@ -86,39 +61,18 @@ class VideoProgressLogic {
             } else {
                 val minutesRemaining = ((table.duration - table.progress) / 60000.0 ).roundToInt()
 
-                val season = if (minutesRemaining > 10) {
-                    val episode = catalog
-                        .seasons.find { it.season == table.season }
-                        ?.episodes?.find { it.episode == table.episode }?.apply {
+                val episode = if (minutesRemaining > 10) {
+                    catalog.episodes.find { it.season == table.season && it.episode == table.episode }?.apply {
                             this.progress = table.progress
                             this.duration = table.duration
                             this.played = table.played
                         }
-                    if (episode != null) Season(table.season, mutableListOf(episode)) else null
                 } else {
-                    //val nextInSeason = catalog.seasons.find { it.season == table.season }?.episodes?.firstOrNull { e -> e.episode > table.episode }
-
-                    val withinSeasonWithNextEpisode = catalog.seasons.find { it.season == table.season }?.apply {
-                        val firstEpisode = this.episodes.firstOrNull { e -> e.episode > table.episode }
-                        this.episodes.removeIf { it != firstEpisode }
-                    }
-
-                    val seasonWithNextEpisode = catalog.seasons.firstOrNull { s -> s.season > table.season }?.apply {
-                        val firstEpisode = this.episodes.firstOrNull()
-                        this.episodes.removeAll {  it != firstEpisode }
-                    }
-
-                    if (withinSeasonWithNextEpisode != null && withinSeasonWithNextEpisode.episodes.isNotEmpty()) withinSeasonWithNextEpisode else seasonWithNextEpisode
+                    catalog.after(table.season, table.episode)
                 }
-
-                if (season != null && season.episodes.isNotEmpty()) {
-                    catalog.apply {
-                        this.seasons = listOf(season)
-                    }
-                } else {
-                    null
+                episode?.let {
+                    catalog.copy(episodes = listOf(it))
                 }
-
             }
         }
 

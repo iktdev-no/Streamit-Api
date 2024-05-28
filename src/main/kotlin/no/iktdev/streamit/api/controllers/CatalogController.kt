@@ -38,8 +38,13 @@ open class CatalogController {
         return QCatalog().selectSerieCatalog()
     }
 
-    @GetMapping("/catalog/serie/{collection}")
-    open fun getSerie(@PathVariable collection: String? = null): Serie? {
+    @GetMapping("/catalog/serie/{id}")
+    open fun getSerie(@PathVariable id: Int? = -1): Serie? {
+        return if (id != null && id > -1) QSerie().selectOnId(id) else null
+    }
+
+    @GetMapping("/serie/{collection}")
+    open fun getSerieOnCollection(@PathVariable collection: String? = null): Serie? {
         return if (!collection.isNullOrEmpty()) QSerie().selectOnCollection(collection) else null
     }
 
@@ -99,8 +104,13 @@ open class CatalogController {
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun getSerie(@PathVariable collection: String?): Serie? {
-            return super.getSerie(collection)
+        override fun getSerie(id: Int?): Serie? {
+            return super.getSerie(id)
+        }
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun getSerieOnCollection(collection: String?): Serie? {
+            return super.getSerieOnCollection(collection)
         }
 
         @Authentication(AuthenticationModes.SOFT)

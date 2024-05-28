@@ -172,7 +172,7 @@ class QProgress {
             } else {
                 progress.insert {
                     it[this.guid] = guid
-                    it[this.type] = movie.type
+                    it[this.type] = movie.type.sqlName()
                     it[this.title] = movie.title.trim()
                     it[this.progress] = movie.progress
                     it[this.duration] = movie.duration
@@ -258,7 +258,7 @@ class QProgress {
     }
 
     private fun serieToProgressTableWithGuid(guid: String, serie: Serie): List<ProgressTable> {
-        return serie.seasons.flatMap { season -> season.episodes.map {
+        return serie.episodes.map {
             ProgressTable(
                 id = -1,
                 guid = guid,
@@ -266,13 +266,13 @@ class QProgress {
                 title = serie.title,
                 collection = serie.collection,
                 video = it.video,
-                season = season.season,
+                season = it.season,
                 episode = it.episode,
                 progress = it.progress,
                 duration = it.duration,
                 played = it.played
             )
-        }}
+        }
     }
 
     @Deprecated("Now")

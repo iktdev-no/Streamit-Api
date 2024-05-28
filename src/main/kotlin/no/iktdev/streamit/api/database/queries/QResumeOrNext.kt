@@ -32,7 +32,7 @@ class QResumeOrNext(val userId: String) {
         if (isResumable(movie.progress, movie.duration) && movie.played > 0) {
             ResumeOrNextQuery(
                 userId = userId,
-                type = movie.type,
+                type = movie.type.sqlName(),
                 collection = movie.collection,
                 video = movie.video,
                 updated = timestampToLocalDateTime(movie.played)
@@ -41,7 +41,7 @@ class QResumeOrNext(val userId: String) {
             executeWithStatus {
                 resumeOrNext.deleteWhere {
                     (resumeOrNext.collection eq movie.collection) and
-                            (resumeOrNext.type eq movie.type) and
+                            (resumeOrNext.type eq movie.type.sqlName()) and
                             (resumeOrNext.userId eq userId)
                 }
             }
@@ -61,13 +61,11 @@ class QResumeOrNext(val userId: String) {
     }
 
     fun setResume(serie: Serie) {
-        val filteredOnPlayed = serie.seasons.mapNotNull { sit ->
-            val episodes = sit.episodes.filter { eit -> eit.played > 0 }
-            if (episodes.isEmpty()) null else sit.copy(sit.season, episodes.toMutableList())
-        }
+        val filteredOnPlayed  = serie.episodes.filter { it.played > 0 }
 
-        val latestSeason = filteredOnPlayed.maxByOrNull { it.season }
-        val latestEpisode = latestSeason?.episodes?.maxBy { it.episode }
+
+        val latestSeason = filteredOnPlayed.maxByOrNull { it.season }?.season
+        val latestEpisode = filteredOnPlayed.filter { it.season == latestSeason }.maxByOrNull { it.episode }
         if (latestEpisode == null || latestEpisode.duration < OneMinute) {
             return
         }
@@ -77,23 +75,21 @@ class QResumeOrNext(val userId: String) {
                 type = serie.type,
                 collection = serie.collection,
                 episode = latestEpisode.episode,
-                season = latestSeason.season,
+                season = latestEpisode.season,
                 video = latestEpisode.video,
                 updated = timestampToLocalDateTime(latestEpisode.played)
             ).upsertAndGetStatus()
         } else {
             Coroutines().CoroutineIO().launch {
                 val pulledSerie = QSerie().selectOnCollection(serie.collection) ?: return@launch
-                val next = pulledSerie.after(latestSeason.season, latestEpisode.episode) ?: return@launch
-                val nextSeason = next.first
-                val nextEpisode = next.second
+                val next = pulledSerie.after(latestEpisode.season, latestEpisode.episode) ?: return@launch
                 ResumeOrNextQuery(
                     userId = userId,
                     type = serie.type,
                     collection = serie.collection,
-                    season = nextSeason,
-                    episode = nextEpisode.episode,
-                    video = nextEpisode.video
+                    season = next.episode,
+                    episode = next.episode,
+                    video = next.video
                 ).upsertAndGetStatus()
             }
         }
@@ -129,21 +125,19 @@ class QResumeOrNext(val userId: String) {
 
     private fun mapToSerie(collection: String, rows: List<ResultRow>): Serie? {
         val base = Serie.basedOn(rows.first())
-        val seasonToEpisode = rows.groupBy { it[serie.season] }.map {
-                seasonGroup ->
-            val episodes = seasonGroup.value.map {
-                Episode(
-                    episode = it[serie.episode],
-                    title = it[serie.title],
-                    video = it[serie.video],
-                    progress = it[progress.progress],
-                    duration = it[progress.duration],
-                    played = it[progress.played]?.toEpochSeconds()?.toInt() ?: 0
-                )
-            }
-            Season<Episode>(season = seasonGroup.key, episodes.toMutableList())
+        val mapped = rows.map {
+            Episode(
+                season =  it[serie.season],
+                episode = it[serie.episode],
+                title = it[serie.title],
+                video = it[serie.video],
+                progress = it[progress.progress],
+                duration = it[progress.duration],
+                played = it[progress.played]?.toEpochSeconds()?.toInt() ?: 0
+            )
         }
-        return base.apply { seasons = seasonToEpisode }
+
+        return base.apply { episodes = mapped }
     }
 
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "no.iktdev"
-version = "0.0.6.2-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 base.archivesBaseName = "streamit.api"
 java.sourceCompatibility = JavaVersion.VERSION_11
 

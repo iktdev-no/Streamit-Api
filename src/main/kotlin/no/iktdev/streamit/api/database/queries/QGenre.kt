@@ -20,4 +20,10 @@ class QGenre {
         }
         return if (row == null) null else Genre.fromRow(row)
     }
+
+    fun getByIds(ids: List<Int>): List<Genre> {
+        return if (ids.isNotEmpty()) transaction {
+            genre.select { genre.id inList ids.toList() }.map { Genre.fromRow(it) }
+        } else emptyList()
+    }
 }
