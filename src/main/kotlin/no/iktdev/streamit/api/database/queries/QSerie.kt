@@ -44,7 +44,7 @@ class QSerie {
                     .map { Subtitle.fromRow(it) }.groupBy { it.associatedWithVideo }
                     .forEach { sub ->
                         episodes.firstOrNull { e -> e.video.withoutExtension() == sub.key }?.let {
-                            it.subs = sub.value
+                            it.subtitles = sub.value
                         }
                     }
                 it.episodes = episodes
@@ -76,7 +76,7 @@ class QSerie {
                 .map { Subtitle.fromRow(it) }.groupBy { it.associatedWithVideo }
                 .forEach { sub ->
                     episodes.firstOrNull { e -> e.video.withoutExtension() == sub.key }?.let {
-                        it.subs = sub.value
+                        it.subtitles = sub.value
                     }
                 }
             episodeRows.firstOrNull()?.let {

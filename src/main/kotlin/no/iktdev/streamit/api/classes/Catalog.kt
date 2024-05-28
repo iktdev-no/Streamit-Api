@@ -14,16 +14,6 @@ fun ContentType.sqlName(): String {
     return this.name.lowercase()
 }
 
-abstract class BaseCatalog {
-    abstract val id: Int
-    abstract val title: String
-    abstract val cover: String?
-    abstract val type: String
-    abstract val collection: String
-    abstract var genres: String?
-    abstract val recent: Boolean // If true on serie, shoud display new episodes, if movie, should display just new
-}
-
 abstract class BaseEpisode {
     abstract val season: Int
     abstract val episode: Int
@@ -37,9 +27,8 @@ open class Catalog(
     val cover: String?,
     val type: ContentType,
     val collection: String,
-    val summary: List<Summary> = emptyList(),
     var genres: String?,
-    val recent: Boolean
+    val recent: Boolean // If true on serie, shoud display new episodes, if movie, should display just new
 ) {
     companion object {
         fun fromRow(resultRow: ResultRow, recent: Boolean = false) = Catalog(
@@ -73,7 +62,7 @@ class Movie(
     var progress: Int = 0,
     var duration: Int = 0,
     var played: Int = 0,
-    var subs: List<Subtitle> = emptyList()
+    var subtitles: List<Subtitle> = emptyList()
 ) : Catalog(
     id = id,
     title = title,
@@ -114,30 +103,39 @@ data class Episode(
     var progress: Int = 0,
     var duration: Int = 0,
     var played: Int = 0,
-    var subs: List<Subtitle> = emptyList()
+    var subtitles: List<Subtitle> = emptyList()
 ) : BaseEpisode()
 
 
-data class Serie(
-    var episodes: List<Episode> = emptyList(),
-    override val id: Int,
-    override val title: String,
-    override val cover: String? = null,
-    override val type: String,
-    override val collection: String,
-    override var genres: String?,
-    override var recent: Boolean = false
-) : BaseCatalog() {
+class Serie(
+    id: Int,
+    title: String,
+    cover: String? = null,
+    collection: String,
+    genres: String?,
+    recent: Boolean = false,
+    var episodes: List<Episode> = emptyList()
+) : Catalog(
+    id = id,
+    title = title,
+    cover = cover,
+    type = ContentType.Serie,
+    collection = collection,
+    genres = genres,
+    recent = recent
+) {
     companion object {
         fun basedOn(row: ResultRow) = Serie(
             id = row[catalog.id].value,
             title = row[catalog.title],
             cover = row[catalog.cover],
-            type = row[catalog.type],
             collection = row[catalog.collection],
             genres = row[catalog.genres],
         )
     }
+
+    fun shallowCopy() = Serie(id, title, cover, collection, genres, recent)
+
 
     fun after(currentSeason: Int, currentEpisode: Int): Episode? {
         return episodes.filter { s -> s.season >= currentSeason }.firstOrNull { e -> e.episode >= currentEpisode }

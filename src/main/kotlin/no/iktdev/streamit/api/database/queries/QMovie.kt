@@ -22,7 +22,7 @@ class QMovie {
                 .andWhere { catalog.iid.isNotNull() }
                 .map { Movie.fromRow(it) }.singleOrNull()
             movie?.video?.withoutExtension()?.let { videoName ->
-                movie.subs = subtitle.select { subtitle.associatedWithVideo eq videoName }
+                movie.subtitles = subtitle.select { subtitle.associatedWithVideo eq videoName }
                     .map { Subtitle.fromRow(it) }
             }
             movie?.genres?.let {
@@ -40,7 +40,7 @@ class QMovie {
                 .andWhere { catalog.iid.isNotNull() }
                 .map { Movie.fromRow(it) }.singleOrNull()
             movie?.video?.withoutExtension()?.let { videoName ->
-                movie.subs = subtitle.select { subtitle.associatedWithVideo eq videoName }
+                movie.subtitles = subtitle.select { subtitle.associatedWithVideo eq videoName }
                     .map { Subtitle.fromRow(it) }
             }
             movie

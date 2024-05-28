@@ -48,7 +48,7 @@ class VideoProgressLogic {
         fun getContinueSerieOnForGuid(guid: String): List<Serie> {
             return QProgress().selectLastEpisodesForGuid(guid).mapNotNull {
                 mapToContinueSerie(it).apply {
-                    this?.episodes?.map { e -> e.subs = QSubtitle().selectSubtitleForVideo(e.video) }
+                    this?.episodes?.map { e -> e.subtitles = QSubtitle().selectSubtitleForVideo(e.video) }
                 }
             }
         }
@@ -71,7 +71,9 @@ class VideoProgressLogic {
                     catalog.after(table.season, table.episode)
                 }
                 episode?.let {
-                    catalog.copy(episodes = listOf(it))
+                    catalog.shallowCopy().apply {
+                        this.episodes = listOf(it)
+                    }
                 }
             }
         }

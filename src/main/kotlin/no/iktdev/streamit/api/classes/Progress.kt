@@ -44,6 +44,7 @@ abstract class BaseProgress
     abstract val type: String
     abstract val title: String
     abstract val collection: String
+
 }
 
 data class ProgressMovie(
