@@ -18,28 +18,25 @@ data class ProgressTable(
     val progress: Int,
     val duration: Int,
     val played: Int
-)
-{
-    companion object
-    {
+) {
+    companion object {
         fun fromRow(resultRow: ResultRow) = ProgressTable(
             id = resultRow[progress.id].value,
             guid = resultRow[progress.guid],
             type = resultRow[progress.type],
             title = resultRow[progress.title],
-            collection = resultRow[progress.collection] ?: resultRow[progress.title] ,
+            collection = resultRow[progress.collection] ?: resultRow[progress.title],
             episode = resultRow[progress.episode],
             season = resultRow[progress.season],
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
-            duration =resultRow[progress.duration],
+            duration = resultRow[progress.duration],
             played = resultRow[progress.played]?.toEpochSeconds()?.toInt() ?: 0,
         )
     }
 }
 
-abstract class BaseProgress
-{
+abstract class BaseProgress {
     abstract val guid: String
     abstract val type: ContentType
     abstract val title: String
@@ -57,20 +54,19 @@ data class ProgressMovie(
     var played: Int,
     val video: String?
 
-): BaseProgress()
-{
-    companion object
-    {
+) : BaseProgress() {
+    companion object {
         fun fromProgressTable(item: ProgressTable) = ProgressMovie(
-                guid = item.guid,
-                title = item.title,
-                type = ContentType.Movie,
-                video = item.video,
-                collection = item.collection,
-                progress = item.progress,
-                duration = item.duration,
-                played = item.played
-            )
+            guid = item.guid,
+            title = item.title,
+            type = ContentType.Movie,
+            video = item.video,
+            collection = item.collection,
+            progress = item.progress,
+            duration = item.duration,
+            played = item.played
+        )
+
         fun fromRow(resultRow: ResultRow) = ProgressMovie(
             guid = resultRow[progress.guid],
             title = resultRow[progress.title],
@@ -90,10 +86,8 @@ data class ProgressSerie(
     override val title: String,
     override val collection: String,
     var episodes: List<ProgressEpisode> = emptyList(),
-): BaseProgress()
-{
-    companion object
-    {
+) : BaseProgress() {
+    companion object {
         fun fromProgressTable(item: ProgressTable) = ProgressSerie(
             guid = item.guid,
             title = item.title,
@@ -105,23 +99,27 @@ data class ProgressSerie(
 }
 
 data class ProgressEpisode(
+    val season: Int,
     val episode: Int,
     val progress: Int,
     val duration: Int,
     val played: Int,
     val video: String?
-)
-{
-    companion object
-    {
-        fun fromFlat(item: ProgressTable) = item.episode?.let {
-            ProgressEpisode(
-                episode = it,
+) {
+    companion object {
+        fun fromFlat(item: ProgressTable): ProgressEpisode? {
+            val seasonNumber = item.season ?: return null
+            val episodeNumber = item.episode ?: return null
+
+            return ProgressEpisode(
+                season = seasonNumber,
+                episode = episodeNumber,
                 video = item.video,
                 progress = item.progress,
                 duration = item.duration,
                 played = item.played
             )
+
         }
     }
 }
