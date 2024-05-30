@@ -41,7 +41,7 @@ data class ProgressTable(
 abstract class BaseProgress
 {
     abstract val guid: String
-    abstract val type: String
+    abstract val type: ContentType
     abstract val title: String
     abstract val collection: String
 
@@ -50,7 +50,7 @@ abstract class BaseProgress
 data class ProgressMovie(
     override val guid: String,
     override val title: String,
-    override val type: String,
+    override val type: ContentType,
     override val collection: String,
     val progress: Int,
     val duration: Int,
@@ -64,7 +64,7 @@ data class ProgressMovie(
         fun fromProgressTable(item: ProgressTable) = ProgressMovie(
                 guid = item.guid,
                 title = item.title,
-                type = item.type,
+                type = ContentType.Movie,
                 video = item.video,
                 collection = item.collection,
                 progress = item.progress,
@@ -74,7 +74,7 @@ data class ProgressMovie(
         fun fromRow(resultRow: ResultRow) = ProgressMovie(
             guid = resultRow[progress.guid],
             title = resultRow[progress.title],
-            type = resultRow[progress.type],
+            type = ContentType.Movie,
             video = resultRow[progress.video],
             progress = resultRow[progress.progress],
             duration = resultRow[progress.duration],
@@ -86,7 +86,7 @@ data class ProgressMovie(
 
 data class ProgressSerie(
     override val guid: String,
-    override val type: String,
+    override val type: ContentType,
     override val title: String,
     override val collection: String,
     var episodes: List<ProgressEpisode> = emptyList(),
@@ -97,7 +97,7 @@ data class ProgressSerie(
         fun fromProgressTable(item: ProgressTable) = ProgressSerie(
             guid = item.guid,
             title = item.title,
-            type = item.type,
+            type = ContentType.Serie,
             collection = item.collection,
             episodes = listOf()
         )
