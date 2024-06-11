@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
+import mu.KotlinLogging
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.Jwt
 import no.iktdev.streamit.api.classes.User
@@ -19,6 +20,7 @@ import java.util.*
 
 
 open class Authy {
+    val log = KotlinLogging.logger {}
      companion object {
          fun algorithm(): Algorithm {
              return Algorithm.HMAC256(Configuration.jwtSecret) ?: throw MissingConfigurationException("HS256 JWT secret is not provided correctly, clear environment variable to use default...")
@@ -64,7 +66,11 @@ open class Authy {
         }
     }
 
-    fun isValid(jwt: String): Boolean {
+    fun isValid(jwt: String?): Boolean {
+        if (jwt.isNullOrBlank()) {
+            log.error { "Null or Empty JWT passed for validation!" }
+            throw RuntimeException("Null or Empty JWT passed!")
+        }
         val decoded = decode(jwt) ?: return false
         return !decoded.expiresAt.before(Date())
     }
