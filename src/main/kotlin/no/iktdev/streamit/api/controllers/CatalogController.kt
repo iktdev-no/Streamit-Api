@@ -116,12 +116,12 @@ open class CatalogController {
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun getSerie(id: Int?): Serie? {
+        override fun getSerie(@PathVariable id: Int?): Serie? {
             return super.getSerie(id)
         }
 
         @Authentication(AuthenticationModes.SOFT)
-        override fun getSerieOnCollection(collection: String?): Serie? {
+        override fun getSerieOnCollection(@PathVariable collection: String?): Serie? {
             return super.getSerieOnCollection(collection)
         }
 
