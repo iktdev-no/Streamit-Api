@@ -131,7 +131,6 @@ open class AuthenticationController: Authy() {
             return super.createDelegatedEntry(data)
         }
 
-        @Authentication(AuthenticationModes.STRICT)
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
         override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
             return super.createDelegatedJwt(requesterId, pin)
