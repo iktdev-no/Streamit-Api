@@ -109,7 +109,7 @@ open class AuthenticationController: Authy() {
             return super.createDelegatedEntry(data)
         }
 
-        @GetMapping(value = ["/auth/delegate/{requesterId}/new"])
+        @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
         override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
             return super.createDelegatedJwt(requesterId, pin)
         }
@@ -132,7 +132,7 @@ open class AuthenticationController: Authy() {
         }
 
         @Authentication(AuthenticationModes.STRICT)
-        @GetMapping(value = ["/auth/delegate/{requesterId}/new"])
+        @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
         override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
             return super.createDelegatedJwt(requesterId, pin)
         }
