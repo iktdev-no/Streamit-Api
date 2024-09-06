@@ -28,11 +28,15 @@ open class AuthenticationController: Authy() {
         return createJwt(user)
     }
 
-    open fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, @RequestBody user: User): ResponseEntity<Jwt?> {
+    /**
+     * This function is for a remote device to start polling once it received the server configuration
+     * It will pull on its own requester id as primary path, then pincode as secondary
+     */
+    open fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
         val result = try {
             transaction {
                 val record = delegatedAuthenticationTable.select {
-                    (delegatedAuthenticationTable.pin eq pin.toInt()) and
+                    (delegatedAuthenticationTable.pin eq pin) and
                             (delegatedAuthenticationTable.requesterId eq requesterId) and
                             (delegatedAuthenticationTable.consumed eq false)
                 }.firstNotNullOfOrNull {
@@ -55,21 +59,25 @@ open class AuthenticationController: Authy() {
                 record
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         }
         if (result == null) {
             return ResponseEntity.notFound().build()
         }
         return if (result.expires > LocalDateTime.now()) {
-            ResponseEntity.ok(createJWT(user))
+            ResponseEntity.ok(createJwt(null))
         } else {
             ResponseEntity.status(HttpStatus.GONE).build()
 
         }
     }
 
+    /**
+     * This is called by the device permitting unconfigured device to connect and poll
+     */
     open fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-        if (data.pin.toString().length < 4) {
+        if (data.pin.length != 8) {
             return ResponseEntity.badRequest().body("Unsupported pin!")
         }
         if (data.requesterId.isBlank() || data.requesterId.length < 6) {
@@ -101,9 +109,9 @@ open class AuthenticationController: Authy() {
             return super.createDelegatedEntry(data)
         }
 
-        @PostMapping(value = ["/auth/delegate/new"])
-        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, @RequestBody user: User): ResponseEntity<Jwt?> {
-            return super.createDelegatedJwt(requesterId, pin, user)
+        @GetMapping(value = ["/auth/delegate/{requesterId}/new"])
+        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
+            return super.createDelegatedJwt(requesterId, pin)
         }
     }
 
@@ -124,10 +132,12 @@ open class AuthenticationController: Authy() {
         }
 
         @Authentication(AuthenticationModes.STRICT)
-        @PostMapping(value = ["/auth/delegate/new"])
-        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, @RequestBody user: User): ResponseEntity<Jwt?> {
-            return super.createDelegatedJwt(requesterId, pin, user)
+        @GetMapping(value = ["/auth/delegate/{requesterId}/new"])
+        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
+            return super.createDelegatedJwt(requesterId, pin)
         }
+
+
 
         @Authentication(AuthenticationModes.STRICT)
         @PostMapping(value = ["/auth/new/cast"])

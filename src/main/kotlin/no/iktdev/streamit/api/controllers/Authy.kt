@@ -28,23 +28,30 @@ open class Authy {
          val issuer = "StreamIT Instantiated Authy"
      }
 
-    fun createJwt(user: User, ttl: String? = null): Jwt {
+    fun createJwt(user: User?, ttl: String? = null): Jwt {
         val zone = ZoneOffset.systemDefault().rules.getOffset(Instant.now())
-        val usermap = mapOf(
-            "guid" to user.guid,
-            "name" to user.name,
-            "image" to user.image
-        )
+        val usermap = user?.let { usr ->
+            mapOf(
+                "guid" to usr.guid,
+                "name" to usr.name,
+                "image" to usr.image
+            )
+        }
         val builder = JWT.create()
             .withIssuer(issuer)
             .withIssuedAt(Date.from(Instant.now()))
-            .withPayload(mapOf("user" to usermap))
             .withSubject("Authorization for A.O.I.")
-        val expiry = if (!ttl.isNullOrEmpty())
-        {
-            // Overrides configuration
-            timeParse().configTime(ttl)
-        } else timeParse().configTime(Configuration.jwtExpiry)
+        usermap?.let { payload ->
+            builder.withPayload(mapOf("user" to payload))
+        }
+
+        val setTtl = if (user == null) {
+            "5m"
+        } else if (!ttl.isNullOrBlank()) {
+            ttl
+        } else Configuration.jwtExpiry
+
+        val expiry = timeParse().configTime(setTtl)
 
         builder.withExpiresAt(Date.from(expiry.toInstant(zone)))
 

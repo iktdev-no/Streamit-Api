@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*
 open class UserController {
 
     @GetMapping("/user")
-    fun allUsers(): List<User> {
+    open fun allUsers(): List<User> {
         return QUser().selectAll()
     }
 
     @GetMapping("/user/{guid}")
-    fun getUserByGuid(@PathVariable guid: String): User? {
+    open fun getUserByGuid(@PathVariable guid: String): User? {
         return QUser().selectWidth(guid)
     }
 
@@ -56,6 +56,16 @@ open class UserController {
         @Authentication(AuthenticationModes.STRICT)
         override fun deleteUser(@RequestBody user: User): ResponseEntity<String> {
             return super.deleteUser(user)
+        }
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun allUsers(): List<User> {
+            return super.allUsers()
+        }
+
+        @Authentication(AuthenticationModes.SOFT)
+        override fun getUserByGuid(guid: String): User? {
+            return super.getUserByGuid(guid)
         }
     }
 

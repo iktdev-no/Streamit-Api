@@ -31,7 +31,7 @@ class AuthenticationInterceptor: HandlerInterceptor, Authy() {
                     val isValid = isValid(value)
                     if (!isValid)
                         response.status = HttpStatus.BAD_REQUEST.value()
-                    // TODO: Stricter lookup
+                    // TODO: Stricter lookup + check user is correct and present
                     isValid
                 }
                 else -> {
