@@ -105,7 +105,7 @@ open class AuthenticationController: Authy() {
         }
 
         @PostMapping(value = ["/auth/delegate/permit"])
-        override fun createDelegatedEntry(data: DelegatedEntryData): ResponseEntity<String> {
+        override fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
             return super.createDelegatedEntry(data)
         }
 
@@ -127,7 +127,7 @@ open class AuthenticationController: Authy() {
 
         @Authentication(AuthenticationModes.STRICT)
         @PostMapping(value = ["/auth/delegate/permit"])
-        override fun createDelegatedEntry(data: DelegatedEntryData): ResponseEntity<String> {
+        override fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
             return super.createDelegatedEntry(data)
         }
 
