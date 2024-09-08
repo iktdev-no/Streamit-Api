@@ -17,6 +17,7 @@ import no.iktdev.streamit.library.db.executeWithStatus
 import no.iktdev.streamit.library.db.tables.AuthMethod
 import no.iktdev.streamit.library.db.tables.delegatedAuthenticationTable
 import no.iktdev.streamit.library.db.tables.registeredDevices
+import no.iktdev.streamit.library.db.withTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -129,14 +130,14 @@ open class AuthenticationController: Authy() {
     }
 
     open fun getPinAndInfo(@PathVariable pin: String): ResponseEntity<DelegatedRequestData> {
-        val data = executeWithResult {
+        val data = withTransaction {
             delegatedAuthenticationTable.select { delegatedAuthenticationTable.pin eq pin }.firstNotNullOfOrNull {
                 DelegatedRequestData(
                     pin = it[delegatedAuthenticationTable.pin],
                     requesterId = it[delegatedAuthenticationTable.requesterId],
-                    deviceInfo = it[delegatedAuthenticationTable.deviceInfo].let {
+                    deviceInfo = it[delegatedAuthenticationTable.deviceInfo].let { json ->
                         Gson().fromJson(
-                            it,
+                            json,
                             DelegatedDeviceInfo::class.java
                         )
                     },
@@ -149,10 +150,11 @@ open class AuthenticationController: Authy() {
                 )
             }
         }
-        if (data.first == null || data.second != null) {
+        if (data == null) {
             return ResponseEntity.notFound().build()
         }
-        return ResponseEntity.ok(data.first);
+        log.info { "Returning ${Gson().toJson(data)}" }
+        return ResponseEntity.ok(data);
     }
 
 
