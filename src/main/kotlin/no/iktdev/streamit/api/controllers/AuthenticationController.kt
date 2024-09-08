@@ -11,6 +11,7 @@ import no.iktdev.streamit.api.database.timestampToLocalDateTime
 import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.library.db.executeWithResult
 import no.iktdev.streamit.library.db.executeWithStatus
+import no.iktdev.streamit.library.db.tables.AuthMethod
 import no.iktdev.streamit.library.db.tables.delegatedAuthenticationTable
 import no.iktdev.streamit.library.db.tables.registeredDevices
 import org.jetbrains.exposed.sql.*
@@ -38,7 +39,8 @@ open class AuthenticationController: Authy() {
                 val record = delegatedAuthenticationTable.select {
                     (delegatedAuthenticationTable.pin eq pin) and
                             (delegatedAuthenticationTable.requesterId eq requesterId) and
-                            (delegatedAuthenticationTable.consumed eq false)
+                            (delegatedAuthenticationTable.consumed eq false) and
+                            (delegatedAuthenticationTable.permitted eq true)
                 }.firstNotNullOfOrNull {
                     delegatedAuthenticationData(
                         pin = it[delegatedAuthenticationTable.pin],
@@ -74,19 +76,17 @@ open class AuthenticationController: Authy() {
     }
 
     /**
-     * This is called by the device permitting unconfigured device to connect and poll
+     * This is called by the client in order to have a usable entry for the authenticating device to permit with minimal work for the user
      */
-    open fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-        if (data.pin.length != 8) {
-            return ResponseEntity.badRequest().body("Unsupported pin!")
-        }
-        if (data.requesterId.isBlank() || data.requesterId.length < 6) {
-            return ResponseEntity.badRequest().body("Please provide proper id")
+    open fun createDelegateRequestEntry(data: DelegatedEntryData, method: AuthMethod): ResponseEntity<String>  {
+        if (data.pin.isBlank() || data.requesterId.isBlank()) {
+            return ResponseEntity.unprocessableEntity().build()
         }
         val success = executeWithStatus {
             delegatedAuthenticationTable.insert {
                 it[pin] = data.pin
                 it[requesterId] = data.requesterId
+                it[delegatedAuthenticationTable.method] = method
             }
         }
         return if (success) {
@@ -96,6 +96,24 @@ open class AuthenticationController: Authy() {
         }
     }
 
+    open fun permitDelegateRequestEntry(pin: String, authMethod: AuthMethod): ResponseEntity<String> {
+        val success = executeWithStatus {
+            delegatedAuthenticationTable.update({
+                (delegatedAuthenticationTable.method eq authMethod) and
+                        (delegatedAuthenticationTable.pin eq pin)
+            }) {
+                it[permitted] = true
+            }
+        }
+        return if (success) {
+            ResponseEntity.ok().build()
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+
+
     @RestController
     @RequestMapping(path = ["/open"])
     class OpenAuthentication: AuthenticationController() {
@@ -104,9 +122,25 @@ open class AuthenticationController: Authy() {
             return super.createJWT(user)
         }
 
-        @PostMapping(value = ["/auth/delegate/permit"])
-        override fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegatedEntry(data)
+        @PostMapping(value = ["/auth/delegate/request/qr"])
+        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
+            return super.createDelegateRequestEntry(data, AuthMethod.QR)
+        }
+
+        @PostMapping(value = ["/auth/delegate/request/pin"])
+        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
+            return super.createDelegateRequestEntry(data, AuthMethod.PIN)
+        }
+
+
+        @PostMapping(value = ["/auth/delegate/permit/qr"])
+        fun permitDelegatedQrEntry(@RequestBody pin: String): ResponseEntity<String> {
+            return permitDelegateRequestEntry(pin, AuthMethod.QR)
+        }
+
+        @PostMapping(value = ["/auth/delegate/permit/pin"])
+        fun permitDelegatedPinEntry(@RequestBody pin: String): ResponseEntity<String> {
+            return permitDelegateRequestEntry(pin, AuthMethod.PIN)
         }
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
@@ -125,10 +159,27 @@ open class AuthenticationController: Authy() {
             return super.createJWT(user)
         }
 
+        @PostMapping(value = ["/auth/delegate/request/qr"])
+        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
+            return super.createDelegateRequestEntry(data, AuthMethod.QR)
+        }
+
+        @PostMapping(value = ["/auth/delegate/request/pin"])
+        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
+            return super.createDelegateRequestEntry(data, AuthMethod.PIN)
+        }
+
+
+        @PostMapping(value = ["/auth/delegate/permit/qr"])
         @Authentication(AuthenticationModes.STRICT)
-        @PostMapping(value = ["/auth/delegate/permit"])
-        override fun createDelegatedEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegatedEntry(data)
+        fun permitDelegatedQrEntry(@RequestBody pin: String): ResponseEntity<String> {
+            return permitDelegateRequestEntry(pin, AuthMethod.QR)
+        }
+
+        @PostMapping(value = ["/auth/delegate/permit/pin"])
+        @Authentication(AuthenticationModes.STRICT)
+        fun permitDelegatedPinEntry(@RequestBody pin: String): ResponseEntity<String> {
+            return permitDelegateRequestEntry(pin, AuthMethod.PIN)
         }
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
