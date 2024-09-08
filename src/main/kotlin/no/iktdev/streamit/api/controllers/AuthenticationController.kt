@@ -141,7 +141,8 @@ open class AuthenticationController: Authy() {
                     expires = it[delegatedAuthenticationTable.expires],
                     permitted = it[delegatedAuthenticationTable.permitted],
                     consumed = it[delegatedAuthenticationTable.consumed],
-                    method = it[delegatedAuthenticationTable.method]
+                    method = it[delegatedAuthenticationTable.method],
+                    ipaddress = it[delegatedAuthenticationTable.ipaddress]
                 )
             }
         }

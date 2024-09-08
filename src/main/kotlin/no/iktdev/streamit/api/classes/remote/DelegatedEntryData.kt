@@ -25,5 +25,6 @@ data class DelegatedRequestData(
     val expires: LocalDateTime,
     val permitted: Boolean,
     val consumed: Boolean,
-    val method: AuthMethod
+    val method: AuthMethod,
+    val ipaddress: String?
 )
