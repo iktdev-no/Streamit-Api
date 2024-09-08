@@ -36,7 +36,7 @@ open class AuthenticationController: Authy() {
      * This function is for a remote device to start polling once it received the server configuration
      * It will pull on its own requester id as primary path, then pincode as secondary
      */
-    open fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
+    open fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, request: HttpServletRequest? = null): ResponseEntity<out Jwt?>? {
         val result = try {
             transaction {
                 delegatedAuthenticationTable.select {
@@ -58,7 +58,27 @@ open class AuthenticationController: Authy() {
             return ResponseEntity.internalServerError().build()
         }
 
-        result?.let {  consumable ->
+        if (result == null) {
+            return ResponseEntity.notFound().build()
+        }
+
+        log.info { "Consuming authorization on pin: ${result.pin} requested by ${request.getRequestersIp()}" }
+
+
+        val returnable = if (result.expires < LocalDateTime.now() || result.consumed) {
+            if (result.consumed) {
+                log.info { "Authorization is already consumed" }
+            } else {
+                log.info { "Authorization is expired.." }
+            }
+            ResponseEntity.status(HttpStatus.GONE).body(null)
+        } else if (!result.permitted) {
+            log.info { "Authorization needs to be granted.." }
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        } else
+            ResponseEntity.ok(createJwt(null))
+
+        result.let {  consumable ->
             transaction {
                 delegatedAuthenticationTable.update({
                     (delegatedAuthenticationTable.requesterId eq consumable.requesterId) and
@@ -68,18 +88,7 @@ open class AuthenticationController: Authy() {
                 }
             }
         }
-
-        if (result == null) {
-            return ResponseEntity.notFound().build()
-        }
-
-        return if (result.expires < LocalDateTime.now() || result.consumed) {
-            ResponseEntity.status(HttpStatus.GONE).body(null)
-        } else if (!result.permitted) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        } else
-            ResponseEntity.ok(createJwt(null))
-
+        return returnable
     }
 
     fun HttpServletRequest?.getRequestersIp(): String? {
@@ -199,8 +208,8 @@ open class AuthenticationController: Authy() {
         }
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
-        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
-            return super.createDelegatedJwt(requesterId, pin)
+        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, request: HttpServletRequest?): ResponseEntity<out Jwt?>? {
+            return super.createDelegatedJwt(requesterId, pin, request)
         }
     }
 
@@ -246,8 +255,8 @@ open class AuthenticationController: Authy() {
 
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
-        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
-            return super.createDelegatedJwt(requesterId, pin)
+        override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String, request: HttpServletRequest?): ResponseEntity<out Jwt?>? {
+            return super.createDelegatedJwt(requesterId, pin, request)
         }
 
 
