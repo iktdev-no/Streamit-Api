@@ -95,18 +95,20 @@ open class AuthenticationController: Authy() {
         if (data.pin.isBlank() || data.requesterId.isBlank()) {
             return ResponseEntity.unprocessableEntity().build()
         }
+        val ip = request?.getRequestersIp()
         val success = executeWithStatus {
             delegatedAuthenticationTable.insert {
                 it[pin] = data.pin
                 it[requesterId] = data.requesterId
                 it[deviceInfo] = Gson().toJson(data.deviceInfo)
                 it[delegatedAuthenticationTable.method] = method
-                it[delegatedAuthenticationTable.ipaddress] = request?.getRequestersIp()
+                it[delegatedAuthenticationTable.ipaddress] = ip
             }
         }
         if (!success) {
             return ResponseEntity.unprocessableEntity().build()
         }
+        log.info { "Successfully inserted delegate request for ${data.deviceInfo.deviceName?.ifEmpty { data.requesterId }} on $method from $ip\n ${Gson().toJson(data)}" }
         return getPinAndInfo(data.pin)
     }
 
@@ -175,7 +177,10 @@ open class AuthenticationController: Authy() {
 
 
         @PostMapping(value = ["/auth/delegate/permit/qr"])
-        fun permitDelegatedQrEntry(@RequestBody pin: String): ResponseEntity<String> {
+        fun permitDelegatedQrEntry(@RequestBody pin: String? = null): ResponseEntity<String> {
+            if (pin.isNullOrBlank()) {
+                return ResponseEntity.badRequest().build()
+            }
             return permitDelegateRequestEntry(pin, AuthMethod.QR)
         }
 
