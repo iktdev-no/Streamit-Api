@@ -58,6 +58,17 @@ open class AuthenticationController: Authy() {
             return ResponseEntity.internalServerError().build()
         }
 
+        result?.let {  consumable ->
+            transaction {
+                delegatedAuthenticationTable.update({
+                    (delegatedAuthenticationTable.requesterId eq consumable.requesterId) and
+                            (delegatedAuthenticationTable.pin eq consumable.pin)
+                }) {
+                    it[consumed] = true
+                }
+            }
+        }
+
         if (result == null) {
             return ResponseEntity.notFound().build()
         }
