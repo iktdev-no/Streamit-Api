@@ -1,8 +1,11 @@
 package no.iktdev.streamit.api.controllers
 
+import com.google.gson.Gson
 import no.iktdev.streamit.api.classes.Jwt
 import no.iktdev.streamit.api.classes.User
+import no.iktdev.streamit.api.classes.remote.DelegatedDeviceInfo
 import no.iktdev.streamit.api.classes.remote.DelegatedEntryData
+import no.iktdev.streamit.api.classes.remote.DelegatedRequestData
 import no.iktdev.streamit.api.classes.remote.delegatedAuthenticationData
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
@@ -86,6 +89,7 @@ open class AuthenticationController: Authy() {
             delegatedAuthenticationTable.insert {
                 it[pin] = data.pin
                 it[requesterId] = data.requesterId
+                it[deviceInfo] = Gson().toJson(data.deviceInfo)
                 it[delegatedAuthenticationTable.method] = method
             }
         }
@@ -112,15 +116,30 @@ open class AuthenticationController: Authy() {
         }
     }
 
-    open fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
-        val success = executeWithStatus {
-            delegatedAuthenticationTable.select {delegatedAuthenticationTable.pin eq pin }
-                .toList().isNotEmpty()
+    open fun getPinAndInfo(@PathVariable pin: String): ResponseEntity<DelegatedRequestData> {
+        val data = executeWithResult {
+            delegatedAuthenticationTable.select { delegatedAuthenticationTable.pin eq pin }.firstNotNullOfOrNull {
+                DelegatedRequestData(
+                    pin = it[delegatedAuthenticationTable.pin],
+                    requesterId = it[delegatedAuthenticationTable.requesterId],
+                    deviceInfo = it[delegatedAuthenticationTable.deviceInfo].let {
+                        Gson().fromJson(
+                            it,
+                            DelegatedDeviceInfo::class.java
+                        )
+                    },
+                    created = it[delegatedAuthenticationTable.created],
+                    expires = it[delegatedAuthenticationTable.expires],
+                    permitted = it[delegatedAuthenticationTable.permitted],
+                    consumed = it[delegatedAuthenticationTable.consumed],
+                    method = it[delegatedAuthenticationTable.method]
+                )
+            }
         }
-        return if (success) {
-            ResponseEntity.ok().build()
+        if (data.second != null) {
+            return ResponseEntity.notFound().build()
         } else {
-            ResponseEntity.notFound().build()
+            return ResponseEntity.ok(data.first);
         }
     }
 
@@ -156,8 +175,8 @@ open class AuthenticationController: Authy() {
         }
 
         @GetMapping(value = ["/auth/delegate/pending/{pin}"])
-        override fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
-            return super.isPinPresent(pin)
+        override fun getPinAndInfo(@PathVariable pin: String): ResponseEntity<DelegatedRequestData> {
+            return super.getPinAndInfo(pin)
         }
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
@@ -201,8 +220,8 @@ open class AuthenticationController: Authy() {
 
 
         @GetMapping(value = ["/auth/delegate/pending/{pin}"])
-        override fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
-            return super.isPinPresent(pin)
+        override fun getPinAndInfo(@PathVariable pin: String): ResponseEntity<DelegatedRequestData> {
+            return super.getPinAndInfo(pin)
         }
 
 
