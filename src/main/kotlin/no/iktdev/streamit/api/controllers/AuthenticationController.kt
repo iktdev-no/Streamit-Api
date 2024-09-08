@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 open class AuthenticationController: Authy() {
@@ -78,10 +79,18 @@ open class AuthenticationController: Authy() {
         }
     }
 
+    fun HttpServletRequest.getRequestersIp(): String? {
+        val xforwardedIp = this.getHeader("X-Forwarded-For")
+        return xforwardedIp.ifBlank {
+            this.remoteAddr
+        }
+    }
+
+
     /**
      * This is called by the client in order to have a usable entry for the authenticating device to permit with minimal work for the user
      */
-    open fun createDelegateRequestEntry(data: DelegatedEntryData, method: AuthMethod): ResponseEntity<String>  {
+    open fun createDelegateRequestEntry(data: DelegatedEntryData, method: AuthMethod, request: HttpServletRequest?): ResponseEntity<DelegatedRequestData>  {
         if (data.pin.isBlank() || data.requesterId.isBlank()) {
             return ResponseEntity.unprocessableEntity().build()
         }
@@ -91,13 +100,13 @@ open class AuthenticationController: Authy() {
                 it[requesterId] = data.requesterId
                 it[deviceInfo] = Gson().toJson(data.deviceInfo)
                 it[delegatedAuthenticationTable.method] = method
+                it[delegatedAuthenticationTable.ipaddress] = request?.getRequestersIp()
             }
         }
-        return if (success) {
-            ResponseEntity.ok().build()
-        } else {
-            ResponseEntity.unprocessableEntity().build()
+        if (!success) {
+            return ResponseEntity.unprocessableEntity().build()
         }
+        return getPinAndInfo(data.pin)
     }
 
     open fun permitDelegateRequestEntry(pin: String, authMethod: AuthMethod): ResponseEntity<String> {
@@ -154,13 +163,13 @@ open class AuthenticationController: Authy() {
         }
 
         @PostMapping(value = ["/auth/delegate/request/qr"])
-        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegateRequestEntry(data, AuthMethod.QR)
+        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData, request: HttpServletRequest? = null): ResponseEntity<DelegatedRequestData> {
+            return super.createDelegateRequestEntry(data, AuthMethod.QR, request)
         }
 
         @PostMapping(value = ["/auth/delegate/request/pin"])
-        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegateRequestEntry(data, AuthMethod.PIN)
+        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData, request: HttpServletRequest? = null): ResponseEntity<DelegatedRequestData> {
+            return super.createDelegateRequestEntry(data, AuthMethod.PIN, request)
         }
 
 
@@ -196,13 +205,13 @@ open class AuthenticationController: Authy() {
         }
 
         @PostMapping(value = ["/auth/delegate/request/qr"])
-        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegateRequestEntry(data, AuthMethod.QR)
+        fun createDelegateQrRequestEntry(@RequestBody data: DelegatedEntryData, request: HttpServletRequest? = null): ResponseEntity<DelegatedRequestData> {
+            return super.createDelegateRequestEntry(data, AuthMethod.QR, request)
         }
 
         @PostMapping(value = ["/auth/delegate/request/pin"])
-        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData): ResponseEntity<String> {
-            return super.createDelegateRequestEntry(data, AuthMethod.PIN)
+        fun createDelegatePinRequestEntry(@RequestBody data: DelegatedEntryData, request: HttpServletRequest? = null): ResponseEntity<DelegatedRequestData> {
+            return super.createDelegateRequestEntry(data, AuthMethod.PIN, request)
         }
 
 
