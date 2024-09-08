@@ -1,5 +1,6 @@
 package no.iktdev.streamit.api.controllers
 
+import com.google.api.Http
 import com.google.gson.Gson
 import no.iktdev.streamit.api.classes.Jwt
 import no.iktdev.streamit.api.classes.User
@@ -60,13 +61,14 @@ open class AuthenticationController: Authy() {
         if (result == null) {
             return ResponseEntity.notFound().build()
         }
-        return if (result.expires > LocalDateTime.now()) {
-            ResponseEntity.ok(createJwt(null))
+
+        return if (result.expires < LocalDateTime.now() || result.consumed) {
+            ResponseEntity.status(HttpStatus.GONE).body(null)
         } else if (!result.permitted) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        } else if (result.consumed) {
-            ResponseEntity.status(HttpStatus.GONE).body(null)
-        } else ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+        } else
+            ResponseEntity.ok(createJwt(null))
+
     }
 
     fun HttpServletRequest?.getRequestersIp(): String? {
