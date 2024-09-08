@@ -141,8 +141,8 @@ open class AuthenticationController: Authy() {
                             DelegatedDeviceInfo::class.java
                         )
                     },
-                    created = it[delegatedAuthenticationTable.created],
-                    expires = it[delegatedAuthenticationTable.expires],
+                    created = it[delegatedAuthenticationTable.created].toEpochSeconds(),
+                    expires = it[delegatedAuthenticationTable.expires].toEpochSeconds(),
                     permitted = it[delegatedAuthenticationTable.permitted],
                     consumed = it[delegatedAuthenticationTable.consumed],
                     method = it[delegatedAuthenticationTable.method],
