@@ -112,6 +112,18 @@ open class AuthenticationController: Authy() {
         }
     }
 
+    open fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
+        val success = executeWithStatus {
+            delegatedAuthenticationTable.select {delegatedAuthenticationTable.pin eq pin }
+                .toList().isNotEmpty()
+        }
+        return if (success) {
+            ResponseEntity.ok().build()
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
 
 
     @RestController
@@ -141,6 +153,11 @@ open class AuthenticationController: Authy() {
         @PostMapping(value = ["/auth/delegate/permit/pin"])
         fun permitDelegatedPinEntry(@RequestBody pin: String): ResponseEntity<String> {
             return permitDelegateRequestEntry(pin, AuthMethod.PIN)
+        }
+
+        @GetMapping(value = ["/auth/delegate/pending/{pin}"])
+        override fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
+            return super.isPinPresent(pin)
         }
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
@@ -181,6 +198,14 @@ open class AuthenticationController: Authy() {
         fun permitDelegatedPinEntry(@RequestBody pin: String): ResponseEntity<String> {
             return permitDelegateRequestEntry(pin, AuthMethod.PIN)
         }
+
+
+        @GetMapping(value = ["/auth/delegate/pending/{pin}"])
+        override fun isPinPresent(@PathVariable pin: String): ResponseEntity<String> {
+            return super.isPinPresent(pin)
+        }
+
+
 
         @GetMapping(value = ["/auth/delegate/{requesterId}/{pin}/new"])
         override fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
