@@ -65,7 +65,7 @@ open class AuthenticationController: Authy() {
         log.info { "Consuming authorization on pin: ${result.pin} requested by ${request.getRequestersIp()}" }
 
 
-        val returnable = if (result.expires < LocalDateTime.now() || result.consumed) {
+        return if (result.expires < LocalDateTime.now() || result.consumed) {
             if (result.consumed) {
                 log.info { "Authorization is already consumed" }
             } else {
@@ -75,20 +75,19 @@ open class AuthenticationController: Authy() {
         } else if (!result.permitted) {
             log.info { "Authorization needs to be granted.." }
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        } else
-            ResponseEntity.ok(createJwt(null))
-
-        result.let {  consumable ->
-            transaction {
-                delegatedAuthenticationTable.update({
-                    (delegatedAuthenticationTable.requesterId eq consumable.requesterId) and
-                            (delegatedAuthenticationTable.pin eq consumable.pin)
-                }) {
-                    it[consumed] = true
+        } else {
+            result.let {  consumable ->
+                transaction {
+                    delegatedAuthenticationTable.update({
+                        (delegatedAuthenticationTable.requesterId eq consumable.requesterId) and
+                                (delegatedAuthenticationTable.pin eq consumable.pin)
+                    }) {
+                        it[consumed] = true
+                    }
                 }
             }
+            ResponseEntity.ok(createJwt(null))
         }
-        return returnable
     }
 
     fun HttpServletRequest?.getRequestersIp(): String? {
