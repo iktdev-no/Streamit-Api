@@ -79,11 +79,12 @@ open class AuthenticationController: Authy() {
         }
     }
 
-    fun HttpServletRequest.getRequestersIp(): String? {
-        val xforwardedIp = this.getHeader("X-Forwarded-For")
-        return xforwardedIp.ifBlank {
+    fun HttpServletRequest?.getRequestersIp(): String? {
+        this ?: return null
+        val xforwardedIp: String? = this.getHeader("X-Forwarded-For")
+        return if (xforwardedIp.isNullOrEmpty()) {
             this.remoteAddr
-        }
+        } else xforwardedIp
     }
 
 
@@ -146,11 +147,10 @@ open class AuthenticationController: Authy() {
                 )
             }
         }
-        if (data.second != null) {
+        if (data.first == null || data.second != null) {
             return ResponseEntity.notFound().build()
-        } else {
-            return ResponseEntity.ok(data.first);
         }
+        return ResponseEntity.ok(data.first);
     }
 
 
