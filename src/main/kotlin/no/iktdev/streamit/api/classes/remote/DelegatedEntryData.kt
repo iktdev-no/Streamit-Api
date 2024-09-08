@@ -28,3 +28,12 @@ data class DelegatedRequestData(
     val method: AuthMethod,
     val ipaddress: String?
 )
+
+data class InternalDelegatedRequestData(
+    val requesterId: String,
+    val pin: String,
+    val created: LocalDateTime,
+    val expires: LocalDateTime,
+    val permitted: Boolean,
+    val consumed: Boolean,
+)

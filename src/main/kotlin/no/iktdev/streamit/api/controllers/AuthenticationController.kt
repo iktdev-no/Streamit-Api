@@ -3,10 +3,7 @@ package no.iktdev.streamit.api.controllers
 import com.google.gson.Gson
 import no.iktdev.streamit.api.classes.Jwt
 import no.iktdev.streamit.api.classes.User
-import no.iktdev.streamit.api.classes.remote.DelegatedDeviceInfo
-import no.iktdev.streamit.api.classes.remote.DelegatedEntryData
-import no.iktdev.streamit.api.classes.remote.DelegatedRequestData
-import no.iktdev.streamit.api.classes.remote.delegatedAuthenticationData
+import no.iktdev.streamit.api.classes.remote.*
 import no.iktdev.streamit.api.controllers.annotations.Authentication
 import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.database.queries.QUser
@@ -41,43 +38,35 @@ open class AuthenticationController: Authy() {
     open fun createDelegatedJwt(@PathVariable requesterId: String, @PathVariable pin: String): ResponseEntity<Jwt?> {
         val result = try {
             transaction {
-                val record = delegatedAuthenticationTable.select {
+                delegatedAuthenticationTable.select {
                     (delegatedAuthenticationTable.pin eq pin) and
-                            (delegatedAuthenticationTable.requesterId eq requesterId) and
-                            (delegatedAuthenticationTable.consumed eq false) and
-                            (delegatedAuthenticationTable.permitted eq true)
+                            (delegatedAuthenticationTable.requesterId eq requesterId)
                 }.firstNotNullOfOrNull {
-                    delegatedAuthenticationData(
+                    InternalDelegatedRequestData(
                         pin = it[delegatedAuthenticationTable.pin],
                         requesterId = it[delegatedAuthenticationTable.requesterId],
                         created = it[delegatedAuthenticationTable.created],
-                        expires = it[delegatedAuthenticationTable.expires]
+                        expires = it[delegatedAuthenticationTable.expires],
+                        consumed = it[delegatedAuthenticationTable.consumed],
+                        permitted = it[delegatedAuthenticationTable.permitted],
                     )
                 }
-                if (record != null) {
-                    // Consume
-                    delegatedAuthenticationTable.update({
-                        (delegatedAuthenticationTable.requesterId eq record.requesterId) and
-                        (delegatedAuthenticationTable.pin eq record.pin)
-                    }) {
-                        it[consumed] = true
-                    }
-                }
-                record
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+            return ResponseEntity.internalServerError().build()
         }
+
         if (result == null) {
             return ResponseEntity.notFound().build()
         }
         return if (result.expires > LocalDateTime.now()) {
             ResponseEntity.ok(createJwt(null))
-        } else {
-            ResponseEntity.status(HttpStatus.GONE).build()
-
-        }
+        } else if (!result.permitted) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        } else if (result.consumed) {
+            ResponseEntity.status(HttpStatus.GONE).body(null)
+        } else ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
     }
 
     fun HttpServletRequest?.getRequestersIp(): String? {
