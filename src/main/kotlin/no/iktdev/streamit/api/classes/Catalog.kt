@@ -45,7 +45,7 @@ open class Catalog(
                 ) ContentType.Serie else ContentType.Unknown
             },
             collection = resultRow[catalog.collection],
-            genres = resultRow[catalog.genres],
+            genres = resultRow[catalog.genres] ?: "",
             recent = recent
         )
     }
@@ -79,7 +79,7 @@ class Movie(
             title = resultRow[catalog.title],
             cover = resultRow[catalog.cover],
             collection = resultRow[catalog.collection],
-            genres = resultRow[catalog.genres],
+            genres = resultRow[catalog.genres] ?: "",
             recent = recent
         )
 
@@ -130,7 +130,7 @@ class Serie(
             title = row[catalog.title],
             cover = row[catalog.cover],
             collection = row[catalog.collection],
-            genres = row[catalog.genres],
+            genres = row[catalog.genres]?: "",
         )
     }
 
