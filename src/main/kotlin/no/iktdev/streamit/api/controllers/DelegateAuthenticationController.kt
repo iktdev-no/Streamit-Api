@@ -265,6 +265,7 @@ open class DelegateAuthenticationController: Authy() {
         }
 
         @GetMapping(value = ["/request/pending/{session}/{pin}"])
+        @Authentication(AuthenticationModes.NONE)
         fun requestDelegationOnSession(@PathVariable session: String, @PathVariable pin: String, request: HttpServletRequest?): ResponseEntity<out Jwt?>? {
             return super.createDelegatedJwt(session, pin, request)
         }

@@ -34,6 +34,10 @@ class AuthenticationInterceptor: HandlerInterceptor, Authy() {
                     // TODO: Stricter lookup + check user is correct and present
                     isValid
                 }
+                AuthenticationModes.NONE -> {
+                    log.warn { "Allowing request through ${this::class.java.simpleName} due to authentication mode set to None" }
+                    return true
+                }
                 else -> {
                     response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
                     false
