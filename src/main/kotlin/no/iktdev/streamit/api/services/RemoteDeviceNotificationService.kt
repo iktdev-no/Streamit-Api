@@ -18,8 +18,8 @@ class RemoteDeviceNotificationService {
             File(it)
         }
         if (fcmFile == null || !fcmFile.exists()) {
-            log.info { "No firebase service file found." }
-            log.info { "FCM provided notifications will not be available, and remote configuration and sharing will be unavailable." }
+            log.warn { "No firebase service file found." }
+            log.warn { "FCM provided notifications will not be available, and remote configuration and sharing will be unavailable." }
         } else {
             try {
                 FileInputStream(fcmFile.absolutePath).use { fis ->
