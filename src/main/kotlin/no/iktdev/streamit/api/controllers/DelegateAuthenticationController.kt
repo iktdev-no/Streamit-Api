@@ -8,6 +8,7 @@ import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.getRequestersIp
 import no.iktdev.streamit.library.db.executeWithStatus
+import no.iktdev.streamit.library.db.tables.AuthMethod
 import no.iktdev.streamit.library.db.tables.delegatedAuthenticationTable
 import no.iktdev.streamit.library.db.withTransaction
 import org.jetbrains.exposed.sql.*
@@ -25,10 +26,11 @@ import javax.servlet.http.HttpServletRequest
 
 open class DelegateAuthenticationController: Authy() {
 
+
     /**
      *
      */
-    fun createDelegationRequestSession(data: AuthInitiateRequest, pinOrQr: String, request: HttpServletRequest?): ResponseEntity<RequestCreatedResponse> {
+    fun createDelegationRequestSession(data: AuthInitiateRequest, pinOrQr: AuthMethod, request: HttpServletRequest?): ResponseEntity<RequestCreatedResponse> {
         val ip = request?.getRequestersIp()
         val reqId = data.toRequestId()
         var insertedId: Int? = null
@@ -37,7 +39,7 @@ open class DelegateAuthenticationController: Authy() {
                 it[pin] = data.pin
                 it[requesterId] = reqId
                 it[deviceInfo] = Gson().toJson(data.deviceInfo)
-                it[method] = method
+                it[method] = pinOrQr
                 it[ipaddress] = ip
             }.value
         }
@@ -184,7 +186,7 @@ open class DelegateAuthenticationController: Authy() {
          */
         @PostMapping(value = ["/request/pin"])
         fun createPINDelegationRequestSession(@RequestBody data: AuthInitiateRequest, request: HttpServletRequest? = null): ResponseEntity<RequestCreatedResponse> {
-            return createDelegationRequestSession(data, "PIN", request)
+            return createDelegationRequestSession(data, AuthMethod.PIN, request)
         }
 
         /**
@@ -199,7 +201,7 @@ open class DelegateAuthenticationController: Authy() {
          */
         @PostMapping(value = ["/request/qr"])
         fun createQRDelegationRequestSession(@RequestBody data: AuthInitiateRequest, request: HttpServletRequest? = null): ResponseEntity<RequestCreatedResponse> {
-            return createDelegationRequestSession(data, "QR", request)
+            return createDelegationRequestSession(data, AuthMethod.QR, request)
         }
 
         @GetMapping(value = ["/request/pending/{session}/{pin}"])
@@ -245,7 +247,7 @@ open class DelegateAuthenticationController: Authy() {
         @PostMapping(value = ["/request/pin"])
         @Authentication(AuthenticationModes.NONE)
         fun createPINDelegationRequestSession(@RequestBody data: AuthInitiateRequest, request: HttpServletRequest? = null): ResponseEntity<RequestCreatedResponse> {
-            return createDelegationRequestSession(data, "PIN", request)
+            return createDelegationRequestSession(data, AuthMethod.PIN, request)
         }
 
         /**
@@ -261,7 +263,7 @@ open class DelegateAuthenticationController: Authy() {
         @PostMapping(value = ["/request/qr"])
         @Authentication(AuthenticationModes.NONE)
         fun createQRDelegationRequestSession(@RequestBody data: AuthInitiateRequest, request: HttpServletRequest? = null): ResponseEntity<RequestCreatedResponse> {
-            return createDelegationRequestSession(data, "QR", request)
+            return createDelegationRequestSession(data, AuthMethod.QR, request)
         }
 
         @GetMapping(value = ["/request/pending/{session}/{pin}"])
