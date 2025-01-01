@@ -8,11 +8,9 @@ import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.database.toEpochSeconds
 import no.iktdev.streamit.api.getRequestersIp
 import no.iktdev.streamit.library.db.executeWithStatus
-import no.iktdev.streamit.library.db.tables.AuthMethod
 import no.iktdev.streamit.library.db.tables.delegatedAuthenticationTable
 import no.iktdev.streamit.library.db.withTransaction
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -56,7 +54,7 @@ open class DelegateAuthenticationController: Authy() {
             log.error { "Expiry is null!" }
         }
         return ResponseEntity.ok(RequestCreatedResponse(
-            expiery = expires?.toEpochSeconds() ?: 0,
+            expiry = expires?.toEpochSeconds() ?: 0,
             sessionId = reqId
         ))
     }

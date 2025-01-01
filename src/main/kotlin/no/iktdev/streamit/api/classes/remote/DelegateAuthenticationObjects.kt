@@ -22,7 +22,7 @@ data class RequestDeviceInfo(
 )
 
 data class RequestCreatedResponse(
-    val expiery: Long,
+    val expiry: Long,
     val sessionId: String
 )
 
