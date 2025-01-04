@@ -46,9 +46,9 @@ open class AuthenticationController: Authy() {
 
 
     @RestController
-    @RequestMapping(path = ["/open"])
+    @RequestMapping(path = ["/open/auth"])
     class OpenAuthentication: AuthenticationController() {
-        @PostMapping(value = ["/auth/new"])
+        @PostMapping(value = ["/new"])
         override fun createJWT(@RequestBody user: User): Jwt {
             return super.createJWT(user)
         }
@@ -78,7 +78,7 @@ open class AuthenticationController: Authy() {
 
 
         @Authentication(AuthenticationModes.STRICT)
-        @PostMapping(value = ["/auth/new/cast"])
+        @PostMapping(value = ["/new/cast"])
         fun createCastJWT(
             @RequestHeader("Authorization") bearer: String, response: HttpServletResponse
         ): Jwt? {
