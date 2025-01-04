@@ -33,7 +33,15 @@ open class AuthenticationController: Authy() {
     }
 
 
-
+    open fun validateToken(request: HttpServletRequest? = null): ResponseEntity<Boolean?> {
+        val token = request?.getHeader("Authorization") ?: return ResponseEntity.internalServerError().body(null)
+        val isValid = super.isValid(token)
+        return if (isValid) {
+            ResponseEntity.status(202).body(isValid)
+        } else {
+            ResponseEntity.status(405).body(isValid)
+        }
+    }
 
 
 
@@ -45,16 +53,27 @@ open class AuthenticationController: Authy() {
             return super.createJWT(user)
         }
 
+        @GetMapping(value = ["/validate"])
+        override fun validateToken(request: HttpServletRequest?): ResponseEntity<Boolean?> {
+            return super.validateToken(request)
+        }
+
     }
 
     @RestController
-    @RequestMapping(path = ["/secure"])
+    @RequestMapping(path = ["/secure/auth"])
     class RestrictedAuthentication: AuthenticationController() {
 
-        @PostMapping(value = ["/auth/new"])
+        @PostMapping(value = ["/new"])
         @Authentication(AuthenticationModes.STRICT)
         override fun createJWT(@RequestBody user: User): Jwt {
             return super.createJWT(user)
+        }
+
+        @GetMapping(value = ["/validate"])
+        @Authentication(AuthenticationModes.STRICT)
+        override fun validateToken(request: HttpServletRequest?): ResponseEntity<Boolean?> {
+            return super.validateToken(request)
         }
 
 
