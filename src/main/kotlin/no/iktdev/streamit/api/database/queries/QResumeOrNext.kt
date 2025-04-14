@@ -1,5 +1,6 @@
 package no.iktdev.streamit.api.database.queries
 
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import no.iktdev.streamit.api.Configuration
 import no.iktdev.streamit.api.classes.*
@@ -38,18 +39,21 @@ class QResumeOrNext(val userId: String) {
                 updated = timestampToLocalDateTime(movie.played)
             ).upsertAndGetStatus()
         } else {
-            executeWithStatus {
+            executeWithStatus(block = {
                 resumeOrNext.deleteWhere {
                     (resumeOrNext.collection eq movie.collection) and
                             (resumeOrNext.type eq movie.type.sqlName()) and
                             (resumeOrNext.userId eq userId)
                 }
-            }
+            }, onError = {
+              it.printStackTrace()
+              log.error { "Attempted to delete values using:\n${Gson().toJson(movie)}" }
+            })
         }
     }
 
     fun setIgnore(collection: String, type: String, ignore: Boolean = true) {
-        executeWithStatus {
+        executeWithStatus(block = {
             resumeOrNext.update({
                 (resumeOrNext.userId eq userId) and
                         (resumeOrNext.collection eq collection) and
@@ -57,7 +61,9 @@ class QResumeOrNext(val userId: String) {
             }) {
                 it[resumeOrNext.ignore] = ignore
             }
-        }
+        }, onError = {
+            it.printStackTrace()
+        })
     }
 
     fun setResume(serie: Serie) {
@@ -90,13 +96,16 @@ class QResumeOrNext(val userId: String) {
                     season = next.episode,
                     episode = next.episode,
                     video = next.video
-                ).upsertAndGetStatus()
+                ).upsertAndGetStatus(onError = {
+                    it.printStackTrace()
+                    log.error { "Failed to upsert the following content:\npulledSerie:\n${Gson().toJson(pulledSerie)}\n\nnext:\n${Gson().toJson(next)}" }
+                })
             }
         }
     }
 
     fun getResumeOrNextOnSerie(): List<Serie> {
-        val joined = withTransaction {
+        val transactionBlock = {
             resumeOrNext
                 .join(progress, JoinType.INNER) {
                     progress.episode.eq(resumeOrNext.episode)
@@ -119,7 +128,12 @@ class QResumeOrNext(val userId: String) {
                 .orderBy(resumeOrNext.updated, SortOrder.DESC)
                 .limit(Configuration.continueWatch)
                 .filterNotNull()
-        }?.groupBy { it[serie.collection] } ?: emptyMap()
+        }
+        val joined = withTransaction(block = transactionBlock,
+            onError = {
+                it.printStackTrace()
+            })?.groupBy { it[serie.collection] } ?: emptyMap()
+
         return joined.mapNotNull { mapToSerie(it.key, it.value) }
     }
 
