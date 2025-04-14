@@ -1,0 +1,47 @@
+name: nightly
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+        
+      - name: Cache Shared Gradle dependencies
+        id: cache-gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('./build.gradle.kts') }}
+
+      - name: Extract version from build.gradle.kts
+        id: extract_version
+        run: |
+          VERSION=$(cat ./build.gradle.kts | grep '^version\s*=\s*\".*\"' | sed 's/^version\s*=\s*\"\(.*\)\"/\1/')
+          echo "VERSION=$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      
+      - name: Build Api
+        id: gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bootJar --info --stacktrace
+          echo "Build completed"
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          # Artifact name
+          name: app.jar
+          path: ./build/libs/app.jar
+          
+  
