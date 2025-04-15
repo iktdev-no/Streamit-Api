@@ -102,8 +102,3 @@ If no token → Reject (401)
 If invalid token → Reject
 ```
 
----
-
-Let me know:
-- Want a config snippet for how to toggle between modes?
-- Should I include streaming server examples in a separate section later?
