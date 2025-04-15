@@ -40,13 +40,6 @@ jobs:
           ./gradlew bootJar --info --stacktrace
           echo "Build completed"
 
-      - name: Upload current path
-        uses: actions/upload-artifact@v4
-        with:
-          # Artifact name
-          name: runnerContext
-          path: ./
-
       - name: Upload application
         uses: actions/upload-artifact@v4
         with:
@@ -54,11 +47,29 @@ jobs:
           name: app.jar
           path: ./build/libs/app.jar
 
+      - name: Upload dockerfile
+        uses: actions/upload-artifact@v4
+        with:
+          # Artifact name
+          name: dockerfile
+          path: ./Dockerfile    
+
   build-container:
     needs:
       - build-api
     runs-on: ubuntu-latest
     steps:
+    
+      - name: Download dockerfile
+        uses: actions/download-artifact@v4.2.1
+        with:
+          name: dockerfile
+    
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v4.2.1
+        with:
+          name: app.jar
+    
       - name: Generate Docker image tag
         id: docker-tag
         run: echo "::set-output name=tag::$(date -u +'%Y.%m.%d')-$(uuidgen | cut -c 1-8)"
