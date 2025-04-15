@@ -39,7 +39,7 @@ class QResumeOrNext(val userId: String) {
                 updated = timestampToLocalDateTime(movie.played)
             ).upsertAndGetStatus()
         } else {
-            executeWithStatus(block = {
+            executeWithStatus(run = {
                 resumeOrNext.deleteWhere {
                     (resumeOrNext.collection eq movie.collection) and
                             (resumeOrNext.type eq movie.type.sqlName()) and
@@ -53,7 +53,7 @@ class QResumeOrNext(val userId: String) {
     }
 
     fun setIgnore(collection: String, type: String, ignore: Boolean = true) {
-        executeWithStatus(block = {
+        executeWithStatus(run = {
             resumeOrNext.update({
                 (resumeOrNext.userId eq userId) and
                         (resumeOrNext.collection eq collection) and
@@ -129,7 +129,7 @@ class QResumeOrNext(val userId: String) {
                 .limit(Configuration.continueWatch)
                 .filterNotNull()
         }
-        val joined = withTransaction(block = transactionBlock,
+        val joined = withTransaction(run = transactionBlock,
             onError = {
                 it.printStackTrace()
             })?.groupBy { it[serie.collection] } ?: emptyMap()
