@@ -2,12 +2,15 @@ name: nightly
 
 on:
   push:
+    paths:
+      - '.github/workflows/nightly.yml' # Trigger on changes to `nightly.yml`
+      - '**/*'                          # Trigger on any changes in the codebase
+    paths-ignore:
+      - '**/README.md'                  # Exclude changes to README
+      - '**/LICENSE'                    # Exclude changes to LICENSE
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  workflow_dispatch:
+      - master                          # Only trigger on `master` branch
+  workflow_dispatch:    
 
 jobs:
   build-api:
