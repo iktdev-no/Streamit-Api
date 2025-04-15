@@ -12,6 +12,8 @@ on:
 jobs:
   build-api:
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.extract_version.outputs.VERSION }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
@@ -29,6 +31,7 @@ jobs:
           VERSION=$(cat ./build.gradle.kts | grep '^version\s*=\s*\".*\"' | sed 's/^version\s*=\s*\"\(.*\)\"/\1/')
           echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
       
       - name: Build Api
         id: gradle
@@ -50,5 +53,31 @@ jobs:
           # Artifact name
           name: app.jar
           path: ./build/libs/app.jar
-          
-  
+
+  build-container:
+    needs:
+      - build-api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Docker image tag
+        id: docker-tag
+        run: echo "::set-output name=tag::$(date -u +'%Y.%m.%d')-$(uuidgen | cut -c 1-8)"
+
+      - name: Docker login
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_HUB_NAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          build-args: |
+            PASS_APP_VERSION=${{ needs.build-api.outputs.VERSION }}
+          push: true
+          tags: |
+            bskjon/streamit-api:nightly
+            bskjon/streamit-api:${{ github.sha }}
+            bskjon/streamit-api:${{ steps.docker-tag.outputs.tag }}
