@@ -2,6 +2,8 @@ package no.iktdev.streamit.api.controllers
 
 import mu.KotlinLogging
 import no.iktdev.streamit.api.Configuration
+import no.iktdev.streamit.api.controllers.annotations.Authentication
+import no.iktdev.streamit.api.controllers.annotations.AuthenticationModes
 import no.iktdev.streamit.api.with
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
@@ -28,7 +30,7 @@ open class ContentController {
     }
 
     @GetMapping("video/{collection}/{video}")
-    fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Resource> {
+    open fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Resource> {
         val file = Configuration.content?.with(collection, video)
 
         if (file?.exists() == true) {
@@ -45,33 +47,8 @@ open class ContentController {
         }
     }
 
-    @GetMapping("stream/video/{collection}/{video}")
-    fun streamVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<StreamingResponseBody> {
-        val file = Configuration.content?.with(collection, video)
-
-        if (file?.exists() == true) {
-
-            val stream = StreamingResponseBody { outputStream ->
-                FileInputStream(file).use { inputStream ->
-                    val buffer = ByteArray(1024)
-                    var bytesRead: Int
-                    while ((inputStream.read(buffer).also { bytesRead = it }) != -1) {
-                        outputStream.write(buffer, 0, bytesRead)
-                    }
-                }
-            }
-
-            return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(stream)
-        } else {
-            return ResponseEntity.notFound().build()
-        }
-    }
-
-
     @GetMapping("image/{collection}/{image}")
-    fun provideImageFile(@PathVariable collection: String, @PathVariable image: String): ResponseEntity<ByteArray> {
+    open fun provideImageFile(@PathVariable collection: String, @PathVariable image: String): ResponseEntity<ByteArray> {
         val file = Configuration.content?.with(collection, image)
 
         if (file?.exists() == true) {
@@ -95,7 +72,7 @@ open class ContentController {
     }
 
     @GetMapping("subtitle/{collection}/{language}/{subtitle}")
-    fun provideSubtitle(@PathVariable collection: String, @PathVariable language: String, @PathVariable subtitle: String): ResponseEntity<ByteArray> {
+    open fun provideSubtitle(@PathVariable collection: String, @PathVariable language: String, @PathVariable subtitle: String): ResponseEntity<ByteArray> {
         val file = Configuration.content?.with(collection, "sub", language, subtitle)
         if (file?.exists() == true) {
             val contentType = when (file.extension.lowercase()) {
@@ -119,10 +96,31 @@ open class ContentController {
     @RestController
     @RequestMapping(path = ["/open/media"])
     class OpenContentController(): ContentController() {
-
-
     }
 
+    @RestController
+    @RequestMapping(path = ["/secure/media"])
+    class RestrictedContentController(): ContentController() {
 
+        @Authentication(AuthenticationModes.STRICT)
+        override fun provideVideoFile(collection: String, video: String): ResponseEntity<Resource> {
+            return super.provideVideoFile(collection, video)
+        }
+
+        @Authentication(AuthenticationModes.STRICT)
+        override fun provideImageFile(collection: String, image: String): ResponseEntity<ByteArray> {
+            return super.provideImageFile(collection, image)
+        }
+
+        @Authentication(AuthenticationModes.STRICT)
+        override fun provideSubtitle(
+            collection: String,
+            language: String,
+            subtitle: String
+        ): ResponseEntity<ByteArray> {
+            return super.provideSubtitle(collection, language, subtitle)
+        }
+
+    }
 
 }
