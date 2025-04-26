@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.io.File
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.FileInputStream
+import java.io.OutputStream
 import java.nio.file.Files
 
 
@@ -42,6 +44,31 @@ open class ContentController {
             return ResponseEntity.notFound().build()
         }
     }
+
+    @GetMapping("stream/video/{collection}/{video}")
+    fun streamVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<StreamingResponseBody> {
+        val file = Configuration.content?.with(collection, video)
+
+        if (file?.exists() == true) {
+
+            val stream = StreamingResponseBody { outputStream ->
+                FileInputStream(file).use { inputStream ->
+                    val buffer = ByteArray(1024)
+                    var bytesRead: Int
+                    while ((inputStream.read(buffer).also { bytesRead = it }) != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                    }
+                }
+            }
+
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(stream)
+        } else {
+            return ResponseEntity.notFound().build()
+        }
+    }
+
 
     @GetMapping("image/{collection}/{image}")
     fun provideImageFile(@PathVariable collection: String, @PathVariable image: String): ResponseEntity<ByteArray> {
@@ -90,7 +117,7 @@ open class ContentController {
 
 
     @RestController
-    @RequestMapping(path = ["/open/stream"])
+    @RequestMapping(path = ["/open/media"])
     class OpenContentController(): ContentController() {
 
 
