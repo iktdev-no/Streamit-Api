@@ -2,6 +2,7 @@ package no.iktdev.streamit.api.error
 
 import no.iktdev.streamit.api.classes.Response
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -19,6 +20,8 @@ class DefaultResponseExceptionHandler: ResponseEntityExceptionHandler() {
     {
         exception.printStackTrace()
         val response = Response(false, exception.message.toString())
-        return ResponseEntity(response, HttpStatus.NOT_ACCEPTABLE)
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(response)
     }
 }

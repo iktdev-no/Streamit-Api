@@ -26,7 +26,7 @@ open class ContentController {
     }
 
     @GetMapping("video/{collection}/{video}")
-    fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Any> {
+    fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Resource> {
         val file = Configuration.content?.with(collection, video)
 
         if (file?.exists() == true) {
@@ -35,7 +35,7 @@ open class ContentController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(
                     HttpHeaders.CONTENT_DISPOSITION,
-                    ("attachment; filename=\"" + fileResource.getFilename()).toString() + "\""
+                    ("attachment; filename=\"" + fileResource.filename) + "\""
                 )
                 .body(fileResource)
         } else {
