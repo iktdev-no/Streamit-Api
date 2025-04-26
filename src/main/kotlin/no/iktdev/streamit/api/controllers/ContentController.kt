@@ -25,7 +25,7 @@ open class ContentController {
         }
     }
 
-    @GetMapping("/{collection}/{video}")
+    @GetMapping("video/{collection}/{video}")
     fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Any> {
         val file = Configuration.content?.with(collection, video)
 
@@ -43,7 +43,7 @@ open class ContentController {
         }
     }
 
-    @GetMapping("/{collection}/{image}")
+    @GetMapping("image/{collection}/{image}")
     fun provideImageFile(@PathVariable collection: String, @PathVariable image: String): ResponseEntity<ByteArray> {
         val file = Configuration.content?.with(collection, image)
 
@@ -67,7 +67,7 @@ open class ContentController {
 
     }
 
-    @GetMapping("/{collection}/{language}/{subtitle}")
+    @GetMapping("subtitle/{collection}/{language}/{subtitle}")
     fun provideSubtitle(@PathVariable collection: String, @PathVariable language: String, @PathVariable subtitle: String): ResponseEntity<ByteArray> {
         val file = Configuration.content?.with(collection, "sub", language, subtitle)
         if (file?.exists() == true) {
