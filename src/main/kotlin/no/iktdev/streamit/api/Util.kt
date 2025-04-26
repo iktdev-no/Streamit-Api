@@ -1,5 +1,7 @@
 package no.iktdev.streamit.api
 
+import java.io.File
+import java.nio.file.Paths
 import java.security.MessageDigest
 import javax.servlet.http.HttpServletRequest
 
@@ -22,4 +24,8 @@ fun toSHA256Hash(input: String): String {
     }
 
     return result.toString()
+}
+
+fun File.with(vararg path: String): File {
+    return Paths.get(this.path, *path).toFile()
 }

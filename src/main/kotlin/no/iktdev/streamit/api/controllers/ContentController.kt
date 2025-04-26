@@ -1,0 +1,101 @@
+package no.iktdev.streamit.api.controllers
+
+import mu.KotlinLogging
+import no.iktdev.streamit.api.Configuration
+import no.iktdev.streamit.api.with
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.io.File
+import java.nio.file.Files
+
+
+open class ContentController {
+    val log = KotlinLogging.logger {}
+
+    init {
+        if (Configuration.content == null || Configuration.content?.exists() == false) {
+            log.warn { "No content provided or exists.. No providing through controller will be available.." }
+        }
+    }
+
+    @GetMapping("/{collection}/{video}")
+    fun provideVideoFile(@PathVariable collection: String, @PathVariable video: String): ResponseEntity<Any> {
+        val file = Configuration.content?.with(collection, video)
+
+        if (file?.exists() == true) {
+            val fileResource: Resource = FileSystemResource(file)
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    ("attachment; filename=\"" + fileResource.getFilename()).toString() + "\""
+                )
+                .body(fileResource)
+        } else {
+            return ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/{collection}/{image}")
+    fun provideImageFile(@PathVariable collection: String, @PathVariable image: String): ResponseEntity<ByteArray> {
+        val file = Configuration.content?.with(collection, image)
+
+        if (file?.exists() == true) {
+            val contentType = when (file.extension.lowercase()) {
+                "jpg", "jpeg" -> MediaType.IMAGE_JPEG
+                "png" -> MediaType.IMAGE_PNG
+                "bmp" -> MediaType.parseMediaType("image/bmp")
+                "webp" -> MediaType.parseMediaType("image/webp")
+                else -> MediaType.APPLICATION_OCTET_STREAM
+            }
+            return ResponseEntity.ok()
+                .contentType(contentType)
+                .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    ("attachment; filename=\"" + file.name) + "\""
+                )
+                .body(Files.readAllBytes(file.toPath()))
+        }
+        return ResponseEntity.notFound().build()
+
+    }
+
+    @GetMapping("/{collection}/{language}/{subtitle}")
+    fun provideSubtitle(@PathVariable collection: String, @PathVariable language: String, @PathVariable subtitle: String): ResponseEntity<ByteArray> {
+        val file = Configuration.content?.with(collection, "sub", language, subtitle)
+        if (file?.exists() == true) {
+            val contentType = when (file.extension.lowercase()) {
+                "srt" -> MediaType.parseMediaType("application/x-subrip")
+                "vtt" -> MediaType.parseMediaType("text/vtt")
+                "ass", "ssa" -> MediaType.parseMediaType("text/x-ssa")
+                "sub" -> MediaType.parseMediaType("text/plain") // Noen SUB-filer kan være binære, så sjekk formatet
+                else -> MediaType.APPLICATION_OCTET_STREAM
+            }
+
+            return ResponseEntity.ok()
+                .contentType(contentType)
+                .body(Files.readAllBytes(file.toPath()))
+        }
+        return ResponseEntity.notFound().build()
+
+    }
+
+
+
+    @RestController
+    @RequestMapping(path = ["/open/stream"])
+    class OpenContentController(): ContentController() {
+
+
+    }
+
+
+
+}
